@@ -1,3 +1,9 @@
 backend/node_modules
 .env
 .babelrc
+Yolo/dataset
+Yolo/images
+Yolo/plate_images
+Yolo/runs
+Yolo/video_frames
+Yolo/yolo12s.pt

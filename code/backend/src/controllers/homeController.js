@@ -1,4 +1,5 @@
 import db from '../models/index.js'
+
 let getHomePage = async(req, res) => {
     try {
         let data = await db.User.findAll();
@@ -11,6 +12,11 @@ let getHomePage = async(req, res) => {
     }
 }
 
+let getCRUD = (req, res) => {
+    return res.render('crud.ejs');
+}
+
 export default {
-    getHomePage: getHomePage
+    getHomePage: getHomePage,
+    getCRUD: getCRUD,
 }
