@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Rubik', sans-serif;
+  background: #f0f2f5;
+}
+
+.App {
+  text-align: center;
+  padding: 30px;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 40px;
+}
+
+.parking-area {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.card {
+  width: 200px;
+  height: 200px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s ease;
+}
+
+.card .icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.card .slot-label {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.card .status-text {
+  font-size: 18px;
+  margin-top: 8px;
+}
+
+.card.empty {
+  border: 3px solid #4caf50;
+  color: #4caf50;
+}
+
+.card.occupied {
+  border: 3px solid #9e9e9e;
+  color: #9e9e9e;
+}

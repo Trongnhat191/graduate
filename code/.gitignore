@@ -7,3 +7,4 @@ Yolo/plate_images
 Yolo/runs
 Yolo/video_frames
 Yolo/yolo12s.pt
+../testcode/smart-parking-demo/python/yolo_weights/best.pt
