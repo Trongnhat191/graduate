@@ -44,9 +44,24 @@ wss.on('connection', (ws) => {
 });
 
 app.post('/update', (req, res) => {
-  const { slot1, slot2, entry, exit } = req.body;
+  const { entry, exit, slot1, slot2 } = req.body;
+  
+  // Phát hiện biển số nếu có xe vào/ra
+  if (entry < 50) {
+    exec('conda run -n graduate python ../python/detect_plate.py 0 ./photos/entry', (err, stdout, stderr) => {
+      if (err) console.error(`[Python Entry] ❌ ${stderr}`);
+      else console.log(`[Python Entry] ✅ Biển số: ${stdout.trim()}`);
+    });
+  }
 
-  // Xử lý 2 vị trí đỗ xe
+  if (exit < 50) {
+    exec('conda run -n graduate python ../python/detect_plate.py 2 ./photos/exit', (err, stdout, stderr) => {
+      if (err) console.error(`[Python Exit] ❌ ${stderr}`);
+      else console.log(`[Python Exit] ✅ Biển số: ${stdout.trim()}`);
+    });
+  }
+
+  // Cập nhật trạng thái bãi
   const newStatus = {
     slot1: slot1 < 50 ? 'occupied' : 'empty',
     slot2: slot2 < 50 ? 'occupied' : 'empty',
@@ -58,23 +73,11 @@ app.post('/update', (req, res) => {
 
   if (isChanged) {
     currentStatus = newStatus;
-    console.log(`[SERVER] Gửi trạng thái mới:`, currentStatus);
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(currentStatus));
       }
     });
-  }
-
-  // Chụp ảnh khi có xe ra/vào
-  if (entry < 50) {
-    console.log(`[ENTRY] Phát hiện xe vào → chụp ảnh cam1`);
-    captureImage('/dev/video0', 'photos/entry');
-  }
-
-  if (exit < 50) {
-    console.log(`[EXIT] Phát hiện xe ra → chụp ảnh cam2`);
-    captureImage('/dev/video2', 'photos/exit');
   }
 
   res.sendStatus(200);
