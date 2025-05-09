@@ -1,5 +1,6 @@
 import db from '../models/index.js';
 import bcrypt from 'bcrypt';
+import { updateUserData } from './CRUDService.js';
 
 
 let handleUserLogin = (account, password) => {
@@ -11,10 +12,10 @@ let handleUserLogin = (account, password) => {
             if (isExist) {
                 let user = await db.User.findOne({
                     attributes: ['account', 'roleId', 'password'],
-                    where : { account: account },
+                    where: { account: account },
                     raw: true
                 })
-                if (user){
+                if (user) {
                     // compare password
                     let check = bcrypt.compareSync(password, user.password);
                     if (check) {
@@ -65,12 +66,12 @@ let checkUserAccount = (userAccount) => {
         } catch (e) {
             reject(e);
         }
-    });     
+    });
 }
 
 let getAllUsers = (userId) => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             let users = '';
             if (userId === 'ALL') {
                 users = await db.User.findAll({
@@ -96,7 +97,113 @@ let getAllUsers = (userId) => {
     })
 }
 
+let hashUserPassword = (password) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const salt = await bcrypt.genSalt(10);
+            let hashPassword = await bcrypt.hashSync(password, salt);
+            resolve(hashPassword);
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
+let createNewUser = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let check = await checkUserAccount(data.account);
+            if (check) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Account already exists'
+                });
+            }
+            let hashPasswordFromBcrypt = await hashUserPassword(data.password);
+            await db.User.create({
+                account: data.account,
+                password: hashPasswordFromBcrypt,
+                fullName: data.fullName,
+                roleId: data.roleId,
+                cccd: data.pId,
+                address: data.address,
+                phoneNumber: data.phoneNumber,
+                gender: data.gender === '1' ? true : false,
+                numberPlate: data.numberPlate
+            })
+            resolve({
+                errCode: 0,
+                errMessage: 'OK'
+            });
+        }
+        catch (e) {
+            reject(e);
+        }
+    })
+}
+
+let deleteUser = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let user = await db.User.findOne({
+                where: { id: userId }
+            });
+            if (!user) {
+                resolve({
+                    errCode: 2,
+                    errMessage: 'User does not exist'
+                });
+            }
+            await db.User.destroy({
+                where: { id: userId }
+            });
+            resolve({
+                errCode: 0,
+                errMessage: 'Delete user successfully'
+            });
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+let editUser = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let user = await db.User.findOne({
+                where: { id: data.id },
+                raw: false
+            })
+            if (user) {
+                user.fullName = data.fullName;
+                user.cccd = data.pId;
+                user.numberPlate = data.numberPlate;
+                user.roleId = data.roleId;
+                user.gender = data.gender;
+                user.address = data.address;
+                user.phoneNumber = data.phoneNumber;
+                await user.save();
+                resolve({
+                    errCode: 0,
+                    errMessage: 'Update user successfully'
+                });
+            }
+            else {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'User does not exist'
+                });
+            }
+        }
+        catch (e) {
+            reject(e);
+        }
+    })
+}
 export default {
     handleUserLogin: handleUserLogin,
     getAllUsers: getAllUsers,
+    createNewUser: createNewUser,
+    deleteUser: deleteUser,
+    editUser: editUser,
+
 }

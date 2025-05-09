@@ -46,7 +46,38 @@ let handleGetAllUsers = async (req, res) => {
     });
 }
 
+let handleCreateNewUser = async (req, res) => {
+    let message = await userService.createNewUser(req.body);
+    return res.status(200).json({
+        errCode: message.errCode,
+        message: message.errMessage
+    });
+}
+
+let handleEditUser = async (req, res) => {
+    let data = req.body;
+    // if (!data.id || !data.firstName || !data.lastName || !data.email) {
+    //     return res.status(200).json({
+    //         errCode: 1,
+    //         message: 'Missing input parameters'
+    //     });
+    // }
+    let message = await userService.editUser(data);
+    return res.status(200).json(message);
+}
+
+let handleDeleteUser = async (req, res) => {
+    let message = await userService.deleteUser(req.body.id);
+    return res.status(200).json({
+        errCode: message.errCode,
+        message: message.errMessage
+    });
+}
+
 export default {
     handleLogin: handleLogin,
     handleGetAllUsers: handleGetAllUsers,
+    handleCreateNewUser: handleCreateNewUser,
+    handleEditUser: handleEditUser,
+    handleDeleteUser: handleDeleteUser
 }
