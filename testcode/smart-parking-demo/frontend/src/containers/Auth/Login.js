@@ -4,6 +4,7 @@ import { push } from "connected-react-router";
 
 import * as actions from "../../store/actions";
 import "./Login.scss";
+import {handleLoginApi} from "../../services/userService.js";
 
 class Login extends Component {
     constructor(props) {
@@ -28,17 +29,15 @@ class Login extends Component {
         });
     };
 
-    handleLogin = () => {
-        // console.log('check username', this.state.username);
-        // console.log('check password', this.state.password);
-        this.props.userLoginSuccess({
-            username: this.state.username,
-            password: this.state.password,
-        });
+    handleLogin = async() => {
+        console.log('check username', this.state.username);
+        console.log('check password', this.state.password);
+        console.log(' all state', this.state);
+        await handleLoginApi(this.state.username, this.state.password)
     };
 
     handleShowPassword = () => {
-        this.setState({
+        this.setState({ 
             isShowPassword: !this.state.isShowPassword,
         });
     }
