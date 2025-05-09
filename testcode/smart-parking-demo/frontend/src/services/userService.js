@@ -4,24 +4,12 @@ const handleLoginApi = (account, password) => {
     return axios.post('/api/login',{account,password});
 }
 
-
-
-// const handleLoginApi = async (account, password) => {
-//     try {
-//       const response = await handleLoginApi(account, password);
-//       console.log('Login success:', response.data);
-//       // xử lý khi login thành công
-//     } catch (error) {
-//       console.error('Login failed:', error); // log lỗi chi tiết
-//       if (error.response) {
-//         console.error('Response error:', error.response.data); // lỗi từ backend
-//       } else {
-//         console.error('Network or config error:', error.message);
-//       }
-//     }
-//   };
+const getAllUsers = (inputId) => {
+    return axios.get(`/api/get-all-users?id=${inputId}`);
+}
   
 
 export {
     handleLoginApi,
+    getAllUsers
 }
