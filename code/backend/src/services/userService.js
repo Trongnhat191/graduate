@@ -16,24 +16,32 @@ let handleUserLogin = (account, password) => {
                 })
                 if (user){
                     // compare password
-                    let check = await bcrypt.compareSync(password, user.password);
+                    let check = bcrypt.compareSync(password, user.password);
                     if (check) {
-                        userData.error = 0;
-                        userData.message = 'Login successfully';
+                        // userData.error = 0;
+                        // userData.message = 'Login successfully';
+                        userData.errCode = 0;
+                        userData.errMessage = 'Login successfully';
                         delete user.password;
                         userData.user = user;
                     }
                     else {
-                        userData.error = 3;
-                        userData.message = 'Wrong password';
+                        // userData.error = 3;
+                        // userData.message = 'Wrong password';
+                        userData.errCode = 3;
+                        userData.errMessage = 'Wrong password';
                     }
                 } else {
-                    userData.error = 2;
-                    userData.message = 'Account does not exist';
+                    // userData.error = 2;
+                    // userData.message = 'Account does not exist';
+                    userData.errCode = 2;
+                    userData.errMessage = 'Account does not exist';
                 }
             } else {
-                userData.error = 1;
-                userData.message = 'Account does not exist';
+                // userData.error = 1;
+                // userData.message = 'Account does not exist';
+                userData.errCode = 1;
+                userData.errMessage = 'Account does not exist';
             }
             resolve(userData);
         } catch (e) {
