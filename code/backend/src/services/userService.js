@@ -68,6 +68,35 @@ let checkUserAccount = (userAccount) => {
     });     
 }
 
+let getAllUsers = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try{
+            let users = '';
+            if (userId === 'ALL') {
+                users = await db.User.findAll({
+                    attributes: {
+                        exclude: ['password']
+                    }
+                });
+            }
+            if (userId && userId !== 'ALL') {
+                users = await db.User.findOne({
+                    where: { id: userId },
+                    attributes: {
+                        exclude: ['password']
+                    }
+                });
+            }
+            resolve(users);
+            console.log('users', users);
+        }
+        catch (e) {
+            reject(e);
+        }
+    })
+}
+
 export default {
     handleUserLogin: handleUserLogin,
+    getAllUsers: getAllUsers,
 }
