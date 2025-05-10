@@ -118,22 +118,24 @@ let createNewUser = (data) => {
                     errMessage: 'Account already exists'
                 });
             }
-            let hashPasswordFromBcrypt = await hashUserPassword(data.password);
-            await db.User.create({
-                account: data.account,
-                password: hashPasswordFromBcrypt,
-                fullName: data.fullName,
-                roleId: data.roleId,
-                cccd: data.pId,
-                address: data.address,
-                phoneNumber: data.phoneNumber,
-                gender: data.gender === '1' ? true : false,
-                numberPlate: data.numberPlate
-            })
-            resolve({
-                errCode: 0,
-                errMessage: 'OK'
-            });
+            else {
+                let hashPasswordFromBcrypt = await hashUserPassword(data.password);
+                await db.User.create({
+                    account: data.account,
+                    password: hashPasswordFromBcrypt,
+                    fullName: data.fullName,
+                    roleId: data.roleId,
+                    cccd: data.cccd,
+                    address: data.address,
+                    phoneNumber: data.phoneNumber,
+                    gender: data.gender === '1' ? true : false,
+                    numberPlate: data.numberPlate
+                })
+                resolve({
+                    errCode: 0,
+                    errMessage: 'OK'
+                });
+            }
         }
         catch (e) {
             reject(e);
@@ -169,6 +171,7 @@ let deleteUser = (userId) => {
 let editUser = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
+            console.log('data at nodejs', data);
             let user = await db.User.findOne({
                 where: { id: data.id },
                 raw: false
