@@ -171,14 +171,14 @@ let deleteUser = (userId) => {
 let editUser = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log('data at nodejs', data);
+            // console.log('data at nodejs', data);
             let user = await db.User.findOne({
                 where: { id: data.id },
                 raw: false
             })
             if (user) {
                 user.fullName = data.fullName;
-                user.cccd = data.pId;
+                user.cccd = data.cccd;
                 user.numberPlate = data.numberPlate;
                 user.roleId = data.roleId;
                 user.gender = data.gender;

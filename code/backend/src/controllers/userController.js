@@ -62,6 +62,7 @@ let handleEditUser = async (req, res) => {
     //         message: 'Missing input parameters'
     //     });
     // }
+    console.log('data from userController: ', data);
     let message = await userService.editUser(data);
     return res.status(200).json(message);
 }
