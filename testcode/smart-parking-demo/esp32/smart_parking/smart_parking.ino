@@ -3,7 +3,7 @@
 
 const char* ssid = "TP-Link_825C";
 const char* password = "68449681";
-const char* serverUrl = "http://192.168.0.112:3000/update"; // IP máy chạy NodeJS
+const char* serverUrl = "http://192.168.0.112:6969/update"; // IP máy chạy NodeJS
 
 // Cảm biến vị trí đỗ
 int trigSlot1 = 18, echoSlot1 = 5;
