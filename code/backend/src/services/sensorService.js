@@ -1,5 +1,7 @@
 // backend/services/sensorService.js
 import { exec } from 'child_process';
+import axios from 'axios';
+
 
 let currentStatus = {
   slot1: 'empty',
@@ -26,10 +28,33 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
     // Xử lý entry
     if (entry < 10) {
       response.openEntryServo = true;
-      exec('conda run -n graduate python src/python/detect_plate.py 2 src/photos/entry', (err, stdout, stderr) => {
-        if (err) console.error(`[Python Entry] ❌ ${stderr}`);
-        else console.log(`[Python Entry] ✅ Biển số: ${stdout.trim()}`);
-      });
+
+  exec('conda run -n graduate python src/python/detect_plate.py 2 src/photos/entry', async (err, stdout, stderr) => {
+    if (err) {
+      console.error(`[Python Entry] ❌ ${stderr}`);
+    } else {
+      const lines = stdout.trim().split('\n');
+      const lastLine = lines[lines.length - 1];
+      const plate = lastLine.trim();
+      console.log(`[Python Entry] ✅ Biển số: ${plate}`);
+
+      // Gửi API tạo mới car
+      const timeIn = new Date();
+      timeIn.setHours(timeIn.getHours() + 7); // Đổi múi giờ nếu cần
+
+      try {
+        await axios.post('http://localhost:6969/api/create-new-car', {
+          numberPlate: plate,
+          timeIn: timeIn,
+          timeOut: null,
+          ticketId: Date.now().toString() // ticketId là timestamp đơn giản
+        });
+        console.log(`[Create Car] ✅ Đã lưu biển số ${plate}`);
+      } catch (apiErr) {
+        console.error(`[Create Car] ❌ Lỗi khi gửi API: ${apiErr}`);
+      }
+    }
+  });
     }
   
     // Xử lý exit

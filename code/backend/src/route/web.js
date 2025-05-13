@@ -2,6 +2,7 @@ import express from 'express';
 import homeController from '../controllers/homeController.js';
 import userController from '../controllers/userController.js';
 import sensorController from '../controllers/sensorController.js';
+import carController from '../controllers/carController.js';
 
 let router = express.Router();
 
@@ -30,6 +31,8 @@ let initWebRoutes = (app) => {
     router.delete('/api/delete-user', userController.handleDeleteUser);
 
     router.post('/update', sensorController.handleUpdate);
+
+    router.post('/api/create-new-car', carController.handleCreateNewCar);
     return app.use('/', router);
 }
 

@@ -8,19 +8,19 @@ from paddleocr import PaddleOCR
 
 total_start = time.time()
 
-print("----------------------------")
+# print("----------------------------")
 camera_id = int(sys.argv[1])
 folder = sys.argv[2]
 
 ### Load OCR model ###
 start = time.time()
-ocr = PaddleOCR(lang='vi')
-print(f"✅ Load PaddleOCR: {time.time() - start:.2f}s")
+ocr = PaddleOCR(lang='vi', show_log = False)
+# print(f"✅ Load PaddleOCR: {time.time() - start:.2f}s")
 
 ### Load YOLO model ###
 start = time.time()
 model = YOLO('src/python/yolo_weights/best.pt').to('cuda')
-print(f"✅ Load YOLO model: {time.time() - start:.2f}s")
+# print(f"✅ Load YOLO model: {time.time() - start:.2f}s")
 
 ### Capture image ###
 start = time.time()
@@ -33,25 +33,25 @@ cap.release()
 if ret:
     filename = f"{folder}/{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpeg"
     cv2.imwrite(filename, frame)
-    print(f"✅ Lưu ảnh: {filename}")
+    # print(f"✅ Lưu ảnh: {filename}")
 
 if not ret:
-    print("❌ Lỗi: Không thể chụp ảnh", file=sys.stderr)
+    # print("❌ Lỗi: Không thể chụp ảnh", file=sys.stderr)
     sys.exit(1)
-print(f"📸 Chụp ảnh: {time.time() - start:.2f}s")
+# print(f"📸 Chụp ảnh: {time.time() - start:.2f}s")
 
 ### Detect with YOLO ###
 start = time.time()
-results = model(frame)
+results = model(frame, verbose=False)
 boxes = results[0].boxes
-print(f"🔍 YOLO detect: {time.time() - start:.2f}s")
+# print(f"🔍 YOLO detect: {time.time() - start:.2f}s")
 
 ### OCR with Paddle ###
 start = time.time()
 res = ocr.ocr(frame)
 text = res[0][0][1][0] if res and res[0] else "Không đọc được"
-print(f"🔡 PaddleOCR: {time.time() - start:.2f}s")
-print(f"📃 Kết quả: {text}")
-
+# print(f"🔡 PaddleOCR: {time.time() - start:.2f}s")
+# print(f"📃 Kết quả: {text}")
+print(text)
 ### Tổng thời gian ###
-print(f"⏱️ Tổng thời gian: {time.time() - total_start:.2f}s")
+# print(f"⏱️ Tổng thời gian: {time.time() - total_start:.2f}s")
