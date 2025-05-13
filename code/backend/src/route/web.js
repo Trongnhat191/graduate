@@ -1,6 +1,7 @@
 import express from 'express';
 import homeController from '../controllers/homeController.js';
 import userController from '../controllers/userController.js';
+import sensorController from '../controllers/sensorController.js';
 
 let router = express.Router();
 
@@ -27,6 +28,8 @@ let initWebRoutes = (app) => {
     router.post('/api/create-new-user', userController.handleCreateNewUser);
     router.put('/api/edit-user', userController.handleEditUser);
     router.delete('/api/delete-user', userController.handleDeleteUser);
+
+    router.post('/update', sensorController.handleUpdate);
     return app.use('/', router);
 }
 
