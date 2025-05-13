@@ -55,8 +55,10 @@ void loop() {
     String payload = "{\"slot1\":" + String(d1) + ",\"slot2\":" + String(d2) +
                      ",\"entry\":" + String(de) + ",\"exit\":" + String(dx) + "}";
     http.POST(payload);
+    
     http.end();
   }
 
   delay(1000);
 }
+//
