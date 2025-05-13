@@ -8,10 +8,11 @@ export const registerWSS = (wss) => {
   });
 };
 
-export const handleUpdate = (req, res) => {
-  sensorService.processSensorData(req.body);
-  res.sendStatus(200);
+export const handleUpdate = async (req, res) => {
+  const result = await sensorService.processSensorData(req.body);
+  res.json(result); // Gửi phản hồi JSON về cho ESP32
 };
+
 
 export default {
   handleUpdate,

@@ -1,17 +1,25 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <ArduinoJson.h>
+#include <Servo.h>
 
+// WiFi info
 const char* ssid = "TP-Link_825C";
 const char* password = "68449681";
-const char* serverUrl = "http://192.168.0.112:6969/update"; // IP máy chạy NodeJS
+const char* serverUrl = "http://192.168.0.112:6969/update"; // Địa chỉ server NodeJS
 
-// Cảm biến vị trí đỗ
+// GPIO cảm biến
 int trigSlot1 = 18, echoSlot1 = 5;
 int trigSlot2 = 21, echoSlot2 = 22;
-
-// Cảm biến cổng ra/vào
 int trigEntry = 27, echoEntry = 14;
 int trigExit  = 12, echoExit  = 13;
+
+// GPIO servo
+const int servoEntryPin = 32;
+const int servoExitPin = 33;
+
+Servo servoEntry;
+Servo servoExit;
 
 float readDistance(int trig, int echo) {
   digitalWrite(trig, LOW);
@@ -23,6 +31,14 @@ float readDistance(int trig, int echo) {
   return duration > 0 ? (duration * 0.034 / 2) : 999;
 }
 
+void openServo(Servo& servo, const char* name) {
+  Serial.printf("[SERVO] Mở %s...\n", name);
+  servo.write(90); // góc mở
+  delay(5000);     // giữ mở 5 giây
+  servo.write(0);  // đóng lại
+  Serial.printf("[SERVO] Đóng %s\n", name);
+}
+
 void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, password);
@@ -31,6 +47,11 @@ void setup() {
   pinMode(trigSlot2, OUTPUT); pinMode(echoSlot2, INPUT);
   pinMode(trigEntry,  OUTPUT); pinMode(echoEntry, INPUT);
   pinMode(trigExit,   OUTPUT); pinMode(echoExit, INPUT);
+
+  servoEntry.attach(servoEntryPin);
+  servoExit.attach(servoExitPin);
+  servoEntry.write(0);
+  servoExit.write(0);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -54,11 +75,30 @@ void loop() {
 
     String payload = "{\"slot1\":" + String(d1) + ",\"slot2\":" + String(d2) +
                      ",\"entry\":" + String(de) + ",\"exit\":" + String(dx) + "}";
-    http.POST(payload);
-    
+    int httpResponseCode = http.POST(payload);
+
+    if (httpResponseCode > 0) {
+      String response = http.getString();
+      Serial.println("[SERVER] Response: " + response);
+
+      StaticJsonDocument<200> doc;
+      DeserializationError error = deserializeJson(doc, response);
+      if (!error) {
+        if (doc["openEntryServo"] == true) {
+          openServo(servoEntry, "ENTRY");
+        }
+        if (doc["openExitServo"] == true) {
+          openServo(servoExit, "EXIT");
+        }
+      } else {
+        Serial.println("[ERROR] Phân tích JSON lỗi!");
+      }
+    } else {
+      Serial.printf("[ERROR] Gửi POST thất bại, mã: %d\n", httpResponseCode);
+    }
+
     http.end();
   }
 
   delay(1000);
 }
-//

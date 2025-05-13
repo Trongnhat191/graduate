@@ -41,7 +41,7 @@ def open_camera(camera_index):
         elif key == ord('s'):
             # Chụp và lưu ảnh
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = os.path.join(save_dir, f"frame_{timestamp}_{frame_count}.jpg")
+            filename = os.path.join(save_dir, f"frame_{timestamp}_{frame_count}.png")
             cv2.imwrite(filename, frame)
             print(f"Saved {filename}")
             frame_count += 1
