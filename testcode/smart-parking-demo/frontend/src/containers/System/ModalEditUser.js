@@ -14,12 +14,14 @@ class ModalEditUser extends Component {
             account: '',
             password: '',
             fullName: '',
-            roleId: '',
-            cccd: '',
+            role: '',
+            pId: '',
             address: '',
             phoneNumber: '',
             gender: '',
-            numberPlate: ''
+            cars: {
+                numberPlate: ''
+            }
         };
 
     }
@@ -34,13 +36,15 @@ class ModalEditUser extends Component {
                 id: user.id,
                 account: user.account,
                 password: 'password', // Không cho phép sửa password
-                fullName: user.fullName,
-                roleId: user.roleId,
-                cccd: user.cccd,
+                fullName: user['fullName'],
+                role: user.role,
+                pId: user.pId,
                 address: user.address,
                 phoneNumber: user.phoneNumber,
-                gender: user.gender,
-                numberPlate: user.numberPlate
+                gender: user['gender'],
+                cars:{
+                    numberPlate: user['cars'].numberPlate
+                }
             });
         }
     }
@@ -51,10 +55,21 @@ class ModalEditUser extends Component {
 
     handleOnChangeInput = (event, id) => {
         let copyState = { ...this.state };
-        copyState[id] = event.target.value;
-        this.setState({
-            ...copyState
-        });
+        // console.log('check event', event.target.value);
+        // numberplate
+        if (id === 'numberPlate') {
+            copyState.cars.numberPlate = event.target.value;
+            this.setState({
+                ...copyState
+            });
+            console.log('check state cars', this.state.cars);
+        }
+        else {
+            copyState[id] = event.target.value;
+            this.setState({
+                ...copyState
+            });
+        }
     }
 
     handleOnChangeSelect = (event, id) => {
@@ -68,13 +83,17 @@ class ModalEditUser extends Component {
 
     checkValidateInput = () => {
         let isValid = true;
-        let arrInput = ['account', 'password', 'fullName', 'cccd', 'address', 'phoneNumber', 'phoneNumber', 'roleId', 'gender']
+        let arrInput = ['account', 'password', 'fullName', 'pId', 'address', 'phoneNumber', 'role', 'gender']
         for (let i = 0; i < arrInput.length; i++) {
             if (!this.state[arrInput[i]]){
                 isValid = false;
                 alert('Missing parameter: ' + arrInput[i]);
                 break;
             }
+        }
+        if (this.state.cars.numberPlate === '') {
+            isValid = false;
+            alert('Missing parameter: number plate');
         }
         return isValid;;
     }
@@ -109,7 +128,7 @@ class ModalEditUser extends Component {
                         </div>
                         <div className="input-container">
                             <label>Personal ID</label>
-                            <input type="text" value={this.state.cccd} onChange={(event)=> {this.handleOnChangeInput(event, 'cccd')}}/>
+                            <input type="text" value={this.state.pId} onChange={(event)=> {this.handleOnChangeInput(event, 'pId')}}/>
                         </div>
                         <div className="input-container max-width-input">
                             <label>Address</label>
@@ -117,7 +136,7 @@ class ModalEditUser extends Component {
                         </div>
                         <div className="input-container">
                             <label>Number Plate</label>
-                            <input type="text" value={this.state.numberPlate} onChange={(event)=> {this.handleOnChangeInput(event, 'numberPlate')}}/>
+                            <input type="text" value={this.state.cars.numberPlate} onChange={(event)=> {this.handleOnChangeInput(event, 'numberPlate')}}/>
                         </div>
                         <div className="input-container">
                             <label>Phone Number</label>
@@ -127,17 +146,17 @@ class ModalEditUser extends Component {
                             <label htmlFor="genderSelect" className="form-label">Gender</label>
                             <select name="gender" id="genderSelect" className="form-control" onChange={(event)=> {this.handleOnChangeSelect(event, 'gender')}} value = {this.state.gender}>
                                 <option value="">Choose...</option>
-                                <option value="1">Male</option>
-                                <option value="2">Female</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
                             </select>
                         </div>
 
                         <div className="form-group col-md-3">
                             <label htmlFor="roleSelect" className="form-label">Role</label>
-                            <select name="roleId" id="roleSelect" className="form-control" onChange={(event)=> {this.handleOnChangeSelect(event, 'roleId')}} value = {this.state.roleId}>
+                            <select name="role" id="roleSelect" className="form-control" onChange={(event)=> {this.handleOnChangeSelect(event, 'role')}} value = {this.state.role}>
                                 <option value="">Choose...</option>
-                                <option value="1">Admin</option>
-                                <option value="2">Client</option>
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
                             </select>
                         </div>
 

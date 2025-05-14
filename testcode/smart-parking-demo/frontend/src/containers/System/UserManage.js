@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import "./UserManage.scss";
-import { getAllUsers, createNewUserService, deleteUserService, editUserService } from "../../services/userService";
+import { getAllUsersAndNumberPlate, createNewUserService, deleteUserService, editUserService } from "../../services/userService";
 import ModalUser from "./ModalUser";
 import ModalEditUser
  from "./ModalEditUser";
@@ -28,7 +28,7 @@ class UserManage extends Component {
     }
 
     getAllUsersFromReact = async () => {
-        let response = await getAllUsers("ALL");
+        let response = await getAllUsersAndNumberPlate("ALL");
         if (response && response.errCode === 0) {
             this.setState({
                 arrUsers: response.users,
@@ -55,6 +55,7 @@ class UserManage extends Component {
 
     createNewUser = async (data) => {
         try {
+            console.log("check data from ModelEditUser", data);
             let rensponse = await createNewUserService(data);
             if (rensponse && rensponse.errCode !== 0) {
                 alert(rensponse.message);
@@ -86,15 +87,16 @@ class UserManage extends Component {
     }
     
     handleEditUser = (user) => {
-        // console.log("check edit user", user);
+        // console.log("user from handleEditUser", user);
         this.setState({
             isOpenModalEditUser: true, // Mở modal
             editUser: user, // Truyền user hiện tại vào modal
         });
+
     }
 
     doEditUser = async (user) => {
-        // console.log("check edit user", user);
+        console.log("check edit user", user);
         let res = await editUserService(user);
         if (res && res.errCode === 0) {
             this.setState({
@@ -109,6 +111,7 @@ class UserManage extends Component {
     render() {
         // console.log('check state', this.state);
         let arrUsers = this.state.arrUsers;
+        // console.log('check arrUsers', arrUsers);
         return (
             <div className="users-container">
                 <ModalUser
@@ -162,8 +165,8 @@ class UserManage extends Component {
                                         <tr key={item.id}>
                                             <td>{item.account}</td>
                                             <td>{item.fullName}</td>
-                                            <td>{item.cccd}</td>
-                                            <td>{item.numberPlate}</td>
+                                            <td>{item.pId}</td>
+                                            <td>{item.cars.numberPlate}</td>
                                             <td>
                                                 <button className="btn-edit" onClick={() => this.handleEditUser(item)}>
                                                     <i className="fas fa-pencil-alt"></i>

@@ -1,6 +1,7 @@
 import userService from "../services/userService.js";
 
 let handleLogin = async (req, res) => {
+    // console.log('check login api', req.body);
     let account = req.body.account;
     let password = req.body.password;
 
@@ -15,7 +16,7 @@ let handleLogin = async (req, res) => {
 
 
     let userData = await userService.handleUserLogin(account, password);
-    console.log('userData', userData.errCode, userData.errMessage, userData.user);
+    // console.log('userData', userData.errCode, userData.errMessage, userData.user);
 
     return res.status(200).json({
         // error: userData.error,
@@ -37,7 +38,7 @@ let handleGetAllUsers = async (req, res) => {
         });
     }
 
-    let users = await userService.getAllUsers(id);
+    let users = await userService.getAllUsersAndNumberPlate(id);
 
     return res.status(200).json({
         errCode: 0,
@@ -56,6 +57,7 @@ let handleCreateNewUser = async (req, res) => {
 
 let handleEditUser = async (req, res) => {
     let data = req.body;
+    // console.log('check user from handleEditUser', data);
     // if (!data.id || !data.firstName || !data.lastName || !data.email) {
     //     return res.status(200).json({
     //         errCode: 1,
