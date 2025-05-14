@@ -29,7 +29,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
     if (entry < 10) {
       response.openEntryServo = true;
 
-  exec('conda run -n graduate python src/python/detect_plate.py 2 src/photos/entry', async (err, stdout, stderr) => {
+  exec('conda run -n graduate python src/python/detect_plate.py 0 src/photos/entry', async (err, stdout, stderr) => {
     if (err) {
       console.error(`[Python Entry] ❌ ${stderr}`);
     } else {
