@@ -36,7 +36,7 @@ class Login extends Component {
     });
     try {
       let data = await handleLoginApi(this.state.username, this.state.password);
-      // console.log(data);
+      // console.log("data from handleLogin", data);
       if (data && data.errCode !== 0) {
         this.setState({
           errMessage: data.message,
@@ -44,6 +44,11 @@ class Login extends Component {
       }
       if (data && data.errCode === 0) {
         this.props.userLoginSuccess(data.user);
+        if (data.user.role === "admin") {
+          this.props.navigate("/system/user-manage");
+        } else {
+          this.props.navigate("/home");
+        }
       }
     } catch (error) {
       // console.log(error);

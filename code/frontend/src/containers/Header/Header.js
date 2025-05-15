@@ -8,6 +8,7 @@ import "./Header.scss";
 
 class Header extends Component {
   render() {
+    // console.log("check props Header.js", this.props.isLoggedIn);
     const { processLogout } = this.props;
 
     return (
@@ -26,6 +27,7 @@ class Header extends Component {
   }
 }
 
+// mapStateToProps: lấy dữ liệu từ redux store
 const mapStateToProps = (state) => {
   return {
     isLoggedIn: state.user.isLoggedIn,

@@ -8,7 +8,7 @@ class Home extends Component {
     // Nếu đã đăng nhập thì sẽ chuyển hướng về trang user-manage
     const { isLoggedIn } = this.props;
     let linkToRedirect = isLoggedIn ? "/system/user-manage" : "/home";
-
+    
     return <Redirect to={linkToRedirect} />;
   }
 }

@@ -1,24 +1,119 @@
-.home-header-container{
-    height: 60px;
-    // border: 1px solid red;
-    width: 100%;
-    
-    .home-header-content{
-        width: 100%;
-        display: flex;
-        height: 100%;
+.home-header-container {
+  height: 60px;
+  width: 100%;
+  background-color: #fff;
 
-        .left-content{
-            width: 25%;
-            border: 1px solid blue;
-        }
-        .center-content{
-            width: 50%;
-            border: 1px solid green;
-        }
-        .right-content{
-            width: 25%;
-            border: 1px solid red;
-        }
+  .home-header-content {
+    display: flex;
+    width: 100%;
+    height: 100%;
+
+    .left-content,
+    .center-content,
+    .right-content {
+      display: flex;
+      align-items: center;
+      height: 100%;
     }
-}
+
+    .left-content {
+      width: 25%;
+      border: 1px solid blue;
+    }
+
+    .center-content {
+      width: 50%;
+      border: 1px solid green;
+      justify-content: center;
+    }
+
+    .right-content {
+      width: 25%;
+      border: 1px solid red;
+      justify-content: flex-end;
+      padding-right: 1rem;
+      position: relative;
+
+      .login-button {
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        a.btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #007bff;
+          color: #fff;
+          padding: 0.6rem 1.2rem;
+          font-size: 1rem;
+          border-radius: 8px;
+          text-decoration: none;
+          transition: background-color 0.3s ease;
+
+          &:hover {
+            background-color: #0056b3;
+          }
+
+          &:active {
+            background-color: #004494;
+          }
+        }
+        .user-menu-wrapper{
+          .greeting-text {
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+            margin-right: 10px;
+          }
+  
+          .user-icon {
+            cursor: pointer;
+            font-size: 28px;
+            color: #333;
+  
+            &:hover {
+              color: #007bff;
+            }
+          }
+  
+          .user-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            padding: 8px 0;
+            min-width: 120px;
+            z-index: 10;
+  
+            .dropdown-item {
+              padding: 10px 15px;
+              font-size: 15px;
+              color: #333;
+              cursor: pointer;
+              white-space: nowrap;
+              transition: background-color 0.2s;
+  
+              &:hover {
+                background-color: #f5f5f5;
+              }
+  
+              a {
+                color: inherit;
+                text-decoration: none;
+                display: block;
+                width: 100%;
+                height: 100%;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+        }
+        

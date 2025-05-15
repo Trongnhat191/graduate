@@ -80,7 +80,6 @@ class ModalEditUser extends Component {
         });
     }
 
-
     checkValidateInput = () => {
         let isValid = true;
         let arrInput = ['account', 'password', 'fullName', 'pId', 'address', 'phoneNumber', 'role', 'gender']
@@ -111,7 +110,7 @@ class ModalEditUser extends Component {
                 size="lg" // Kích thước của modal
                 centered
             >
-                <ModalHeader toggle={() => { this.toggle() }}> Edit a new user</ModalHeader>
+                <ModalHeader > Edit a new user</ModalHeader>
                 <ModalBody>
                     <div className="modal-user-body">
                         <div className="input-container">

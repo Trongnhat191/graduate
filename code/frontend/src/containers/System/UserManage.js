@@ -118,7 +118,7 @@ class UserManage extends Component {
                     // Danh sách các props truyền vào ModalUser từ UserManage
                     isOpen={this.state.isOpenModalUser} // Để mở và đóng modal, nó sẽ được truyền vào ModalUser (Là 1 component con)
                     toggleFromParent={this.toggleUserModal} // Để mở và đóng modal
-                // toggle={() => this.setState({ isOpenModalUser: !this.state.isOpenModalUser })} // Để mở và đóng modal
+                    // toggle={() => this.setState({ isOpenModalUser: !this.state.isOpenModalUser })} // Để mở và đóng modal
                     createNewUser={this.createNewUser} // Để tạo mới user
                 />
 

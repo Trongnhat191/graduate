@@ -3,7 +3,7 @@ import { connectRouter } from 'connected-react-router';
 
 // các reducer con
 import appReducer from "./appReducer";
-import adminReducer from "./adminReducer";
+// import adminReducer from "./adminReducer";
 import userReducer from "./userReducer";
 
 // Cấu hình redux-persist giúp lưu trữ trạng thái redux vào localStorage
@@ -20,7 +20,7 @@ const persistCommonConfig = {
 const userPersistConfig = {
     ...persistCommonConfig,
     key: 'user', // key lưu trữ trong localStorage
-    whitelist: ['isLoggedIn', 'userInfo', 'test'] // Chỉ lưu trữ isLoggedIn và userInfo của userReducer vào localStorage
+    whitelist: ['isLoggedIn', 'userInfo'] // Chỉ lưu trữ isLoggedIn và userInfo của userReducer vào localStorage
 };
 
 export default (history) => combineReducers({

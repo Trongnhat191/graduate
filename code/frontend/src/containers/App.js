@@ -13,7 +13,6 @@ import {
 import { path } from "../utils/index.js";
 
 import Home from "../routes/Home.js";
-// import Login from '../routes/Login';
 import Login from "./Auth/Login.js";
 import Header from "./Header/Header.js";
 import System from "../routes/System.js";

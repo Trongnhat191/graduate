@@ -9,6 +9,7 @@ import Header from '../containers/Header/Header';
 class System extends Component {
     render() {
         const { systemMenuPath, isLoggedIn } = this.props;
+        // console.log("props from System.js", this.props);
         return (
             <React.Fragment>
                 {isLoggedIn && <Header />}
