@@ -37,7 +37,7 @@ class ModalUser extends Component {
             this.setState({
                 ...copyState
             });
-            console.log('check state cars', this.state.cars);
+            // console.log('check state cars', this.state.cars);
         }
         else {
             copyState[id] = event.target.value;

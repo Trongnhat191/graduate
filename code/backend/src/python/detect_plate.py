@@ -5,6 +5,7 @@ import time
 from datetime import datetime
 from ultralytics import YOLO
 from paddleocr import PaddleOCR
+import re
 
 total_start = time.time()
 
@@ -14,7 +15,7 @@ folder = sys.argv[2]
 
 ### Load OCR model ###
 start = time.time()
-ocr = PaddleOCR(lang='vi', show_log = False)
+ocr = PaddleOCR(lang='vi', show_log = False, use_angle_cls=True)
 # print(f"✅ Load PaddleOCR: {time.time() - start:.2f}s")
 
 ### Load YOLO model ###
@@ -50,6 +51,7 @@ boxes = results[0].boxes
 start = time.time()
 res = ocr.ocr(frame)
 text = res[0][0][1][0] if res and res[0] else "Không đọc được"
+text = result = re.sub(r'[^A-Za-z0-9]', '', text)
 # print(f"🔡 PaddleOCR: {time.time() - start:.2f}s")
 # print(f"📃 Kết quả: {text}")
 print(text)

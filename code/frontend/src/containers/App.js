@@ -14,29 +14,29 @@ import { path } from "../utils/index.js";
 
 import Home from "../routes/Home.js";
 import Login from "./Auth/Login.js";
-import Header from "./Header/Header.js";
+// import Header from "./Header/Header.js";
 import System from "../routes/System.js";
 
 import { CustomToastCloseButton } from "../components/CustomToast.js";
 import HomePage from "./HomePage/HomePage.js";
 
 class App extends Component {
-  handlePersistorState = () => {
-    const { persistor } = this.props;
-    let { bootstrapped } = persistor.getState();
-    if (bootstrapped) {
-      if (this.props.onBeforeLift) {
-        Promise.resolve(this.props.onBeforeLift())
-          .then(() => this.setState({ bootstrapped: true }))
-          .catch(() => this.setState({ bootstrapped: true }));
-      } else {
-        this.setState({ bootstrapped: true });
-      }
-    }
-  };
+  // handlePersistorState = () => {
+  //   const { persistor } = this.props;
+  //   let { bootstrapped } = persistor.getState();
+  //   if (bootstrapped) {
+  //     if (this.props.onBeforeLift) {
+  //       Promise.resolve(this.props.onBeforeLift())
+  //         .then(() => this.setState({ bootstrapped: true }))
+  //         .catch(() => this.setState({ bootstrapped: true }));
+  //     } else {
+  //       this.setState({ bootstrapped: true });
+  //     }
+  //   }
+  // };
 
   componentDidMount() {
-    this.handlePersistorState();
+    // this.handlePersistorState();
   }
 
   render() {

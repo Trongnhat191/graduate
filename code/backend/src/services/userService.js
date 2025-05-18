@@ -10,8 +10,14 @@ let handleUserLogin = (account, password) => {
       // console.log('isExist', isExist);
       if (isExist) {
         let user = await db.User.findOne({
-          attributes: ["account", "role", "password", "fullName"],
           where: { account: account },
+          include: [
+            {
+              model: db.Car,
+              as: "cars",
+              attributes: ["numberPlate"],
+            },
+          ],
           raw: true,
         });
         if (user) {
@@ -135,6 +141,7 @@ let hashUserPassword = (password) => {
     }
   });
 };
+
 let createNewUser = (data) => {
     console.log("check data from service", data);
   return new Promise(async (resolve, reject) => {

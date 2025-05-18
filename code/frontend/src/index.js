@@ -6,7 +6,7 @@ import './styles/styles.scss';
 import App from './containers/App';
 import * as serviceWorker from './serviceWorker';
 import IntlProviderWrapper from "./hoc/IntlProviderWrapper";
-
+import { PersistGate } from 'redux-persist/integration/react';
 
 import { Provider } from 'react-redux';
 import reduxStore, { persistor } from './redux';
@@ -14,16 +14,19 @@ import reduxStore, { persistor } from './redux';
 const renderApp = () => {
     ReactDOM.render(
         <Provider store={reduxStore}>
-            <IntlProviderWrapper>
+            
+            {/* <IntlProviderWrapper>
                 <App persistor={persistor}/>
-            </IntlProviderWrapper>
+            </IntlProviderWrapper> */}
+            <PersistGate loading={null} persistor={persistor}>
+                <IntlProviderWrapper>
+                    <App />
+                </IntlProviderWrapper>
+            </PersistGate>
         </Provider>,
         document.getElementById('root')
     );
 };
 
 renderApp();
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();

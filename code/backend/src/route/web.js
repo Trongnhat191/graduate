@@ -33,6 +33,11 @@ let initWebRoutes = (app) => {
     router.post('/update', sensorController.handleUpdate);
 
     router.post('/api/create-new-car', carController.handleCreateNewCar);
+
+    // const checkResponse = await axios.get(`http://localhost:6969/api/check-plate/${plate}`);
+    router.get('/api/check-plate/:plate', carController.handleCheckPlate);
+    // create parking logs
+    router.post('/api/create-parking-logs', carController.handleCreateParkingLogs);
     return app.use('/', router);
 }
 
