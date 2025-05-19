@@ -7,24 +7,24 @@ from ultralytics import YOLO
 from paddleocr import PaddleOCR
 import re
 
-total_start = time.time()
+# total_start = time.time()
 
 # print("----------------------------")
 camera_id = int(sys.argv[1])
 folder = sys.argv[2]
 
 ### Load OCR model ###
-start = time.time()
+# start = time.time()
 ocr = PaddleOCR(lang='vi', show_log = False, use_angle_cls=True)
 # print(f"✅ Load PaddleOCR: {time.time() - start:.2f}s")
 
 ### Load YOLO model ###
-start = time.time()
+# start = time.time()
 model = YOLO('src/python/yolo_weights/best.pt').to('cuda')
 # print(f"✅ Load YOLO model: {time.time() - start:.2f}s")
 
 ### Capture image ###
-start = time.time()
+# start = time.time()
 cap = cv2.VideoCapture(camera_id)
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
 ret, frame = cap.read()
@@ -42,14 +42,16 @@ if not ret:
 # print(f"📸 Chụp ảnh: {time.time() - start:.2f}s")
 
 ### Detect with YOLO ###
-start = time.time()
+# start = time.time()
 results = model(frame, verbose=False)
 boxes = results[0].boxes
 # print(f"🔍 YOLO detect: {time.time() - start:.2f}s")
 
 ### OCR with Paddle ###
-start = time.time()
-res = ocr.ocr(frame)
+# start = time.time()
+x1, y1, x2, y2 = map(int, boxes.xyxy[0])
+cut_img = frame[y1:y2, x1:x2]
+res = ocr.ocr(cut_img)
 text = res[0][0][1][0] if res and res[0] else "Không đọc được"
 text = result = re.sub(r'[^A-Za-z0-9]', '', text)
 # print(f"🔡 PaddleOCR: {time.time() - start:.2f}s")
