@@ -1,0 +1,43 @@
+.staff-manage-container{
+    .staff-manage-content{
+        // .title{}
+        .content{
+            display:flex;
+            height: 100%;
+            .content-left, .content-right{
+                // display: flex;
+                // justify-content: center;
+                width: 50%;
+                padding: 20px;
+                height: 100%;
+                background-color: #f0f0f0;
+
+                .content-left-title{
+                    display: flex;
+                    justify-content: center;
+        
+                }
+                .image-in{
+                    width: 600px;
+                    height: 400px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    img{
+                        width: 80%;
+                        height: 80%;
+                        object-fit: cover;
+                    }
+                }
+            }
+            // .content-right{
+            //     display: flex;
+            //     justify-content: center;
+            //     width: 50%;
+            //     padding: 20px;
+            //     height: 100%;
+            //     background-color: #e0e0e0;
+            // }
+        }
+    }
+}

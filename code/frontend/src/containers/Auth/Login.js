@@ -46,8 +46,10 @@ class Login extends Component {
         this.props.userLoginSuccess(data.user);
         if (data.user.role === "admin") {
           this.props.navigate("/system/user-manage");
-        } else {
+        } else if (data.user.role === "user") {
           this.props.navigate("/home");
+        } else if (data.user.role === "staff") {
+          this.props.navigate("/system/staff-manage");
         }
       }
     } catch (error) {

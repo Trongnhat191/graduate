@@ -18,7 +18,7 @@ let app = express();
 app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use('/photos', express.static('src/public/photos'));
 viewEngine(app);
 initWebRoutes(app);
 connectDB();

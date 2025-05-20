@@ -32,9 +32,11 @@ cap.release()
 
 ### Save image ###
 if ret:
-    filename = f"{folder}/{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpeg"
-    cv2.imwrite(filename, frame)
-    # print(f"✅ Lưu ảnh: {filename}")
+    # filename = f"{folder}/{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpeg"
+    filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpeg"
+    filepath = f"{folder}/{filename}"
+    cv2.imwrite(filepath, frame)
+    print(filename)
 
 if not ret:
     # print("❌ Lỗi: Không thể chụp ảnh", file=sys.stderr)

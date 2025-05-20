@@ -19,7 +19,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       role: {
-        type: Sequelize.ENUM('admin', 'user')
+        type: Sequelize.ENUM('admin', 'user', 'staff')
       },
       pId: {
         type: Sequelize.STRING
