@@ -2,6 +2,7 @@ import { exec } from 'child_process';
 import axios from 'axios';
 import db from '../models/index.js';
 import { create } from 'domain';
+// import { create } from 'domain';
 
 let currentStatus = {
     slot1: 'empty',
@@ -81,13 +82,13 @@ let checkTicketExisted = async (carId) => {
                 resolve({
                     endDate: ticket.endDate,
                     errCode: 1,
-                    errMessage: 'Biển số đã tồn tại'
+                    errMessage: 'Vé đã tồn tại'
                 });
             }
             else {
                 resolve({
                     errCode: 0,
-                    errMessage: 'Biển số chưa tồn tại'
+                    errMessage: 'Vé chưa tồn tại'
                 });
             }
         }
@@ -261,7 +262,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
     if (entry < 10 && !entryHandle) {
         entryHandle = true;
         response.openEntryServo = true;
-        exec('conda run -n graduate python src/python/detect_plate.py 0 src/photos/entry', async (err, stdout, stderr) => {
+        exec('conda run -n graduate python src/python/detect_plate.py 2 src/photos/entry', async (err, stdout, stderr) => {
             if (err) {
                 console.error(`[Python Entry] ❌ ${stderr}`);
             } else {
@@ -287,7 +288,6 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
                                 console.log(`[Create Car] ❌ Vé đã hết hạn`);
                                 await deleteTicketByCarId(checkResponse.carId);
                                 console.log(`[Create Car] ✅ Đã xóa vé tháng cũ cho biển số ${plate}`);
-// Xóa vé tháng cũ đã hết hạn
                                 const ticket = await createNewTicket(checkResponse.carId);
                                 console.log(`[Create Car] ✅ Đã tạo vé ngày mới cho biển số ${plate}`);
                             } else {
@@ -326,7 +326,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
     if (exit < 10 && !exitHandle) {
         exitHandle = true;
         response.openExitServo = true;
-        exec('conda run -n graduate python src/python/detect_plate.py 0 src/photos/exit', async (err, stdout, stderr) => {
+        exec('conda run -n graduate python src/python/detect_plate.py 2 src/photos/exit', async (err, stdout, stderr) => {
             if (err) console.error(`[Python Exit] ❌ ${stderr}`);
             else {
                 const lines = stdout.trim().split('\n');
@@ -386,6 +386,68 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
     return response; // trả về cho controller
 };
 
+export const manualPlateCorrection = async (wrongPlate, correctPlate) => {
+    try {
+        // Tìm carId của biển số sai
+        const wrongCar = await db.Car.findOne({ 
+            where: { 
+                numberPlate: wrongPlate 
+            },
+            raw: false
+        });
+        
+        // Kiểm tra xem biển số đúng đã tồn tại chưa
+        const checkResponse = await checkPlateExisted(correctPlate);
+        if (checkResponse.errCode === 1) {
+            if (wrongCar) {
+                // Xóa các bản ghi liên quan đến biển số sai
+                await db.ParkingLog.destroy({ where: { carId: wrongCar.id } });
+                await db.Ticket.destroy({ where: { carId: wrongCar.id } });
+                await wrongCar.destroy();
+            }
+            // Kiểm tra xem vé tháng còn hạn hay không
+            await createParkingLogs(checkResponse.carId);
+            const ticketExisted = await checkTicketExisted(checkResponse.carId);
+            if (ticketExisted.errCode === 1) { // Vé đã tồn tại
+                const currentDate = new Date();
+                const endDate = new Date(ticketExisted.endDate);
+                if (currentDate > endDate) {
+                    console.log(`[Create Car] ❌ Vé đã hết hạn`);
+                    await deleteTicketByCarId(checkResponse.carId);
+                    console.log(`[Create Car] ✅ Đã xóa vé tháng cũ cho biển số ${correctPlate}`);
+                    const ticket = await createNewTicket(checkResponse.carId);
+                    console.log(`[Create Car] ✅ Đã tạo vé ngày mới cho biển số ${correctPlate}`);
+                } else {
+                    console.log(`[Create Car] ✅ Vé còn hiệu lực, cho xe vào`);
+                }
+            } else { // Vé chưa tồn tại
+                console.log(`[Create Car] ❌ Vé chưa tồn tại`);
+                const ticket = await createNewTicket(checkResponse.carId);
+                console.log(`[Create Car] ✅ Đã tạo vé ngày cho biển số ${correctPlate}`);
+            }
+        }
+        else {
+            // Cập nhật biển số đúng thay cho biển số sai
+            const car = await db.Car.findOne({ 
+                where: { 
+                    numberPlate: wrongPlate 
+                },
+                raw: false
+            });
+            if (car) {
+                car.numberPlate = correctPlate;
+                await car.save();
+            }
+            return { success: true, message: 'Biển số chưa tồn tại' };
+            
+        }
+
+        return { success: true, message: 'Đã sửa biển số và cập nhật dữ liệu' };
+    } catch (err) {
+        console.error('[Manual Plate Correction] ❌', err);
+        return { success: false, message: 'Lỗi khi sửa biển số' };
+    }
+};
 
 const broadcastStatus = (status) => {
     for (const client of wssClients) {

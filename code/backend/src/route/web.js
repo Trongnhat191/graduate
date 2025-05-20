@@ -31,7 +31,7 @@ let initWebRoutes = (app) => {
     router.delete('/api/delete-user', userController.handleDeleteUser);
 
     router.post('/update', sensorController.handleUpdate);
-
+    router.post('/manual-plate-correction', sensorController.handleManualPlateCorrection);
     router.post('/api/create-new-car', carController.handleCreateNewCar);
 
     // const checkResponse = await axios.get(`http://localhost:6969/api/check-plate/${plate}`);
