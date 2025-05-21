@@ -30,14 +30,11 @@ class ModalUser extends Component {
 
     handleOnChangeInput = (event, id) => {
         let copyState = { ...this.state };
-        // console.log('check event', event.target.value);
-        // numberplate
         if (id === 'numberPlate') {
             copyState.cars.numberPlate = event.target.value;
             this.setState({
                 ...copyState
             });
-            // console.log('check state cars', this.state.cars);
         }
         else {
             copyState[id] = event.target.value;

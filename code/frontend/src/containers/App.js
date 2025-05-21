@@ -19,6 +19,7 @@ import System from "../routes/System.js";
 
 import { CustomToastCloseButton } from "../components/CustomToast.js";
 import HomePage from "./HomePage/HomePage.js";
+import Register from "./Auth/Register.js";
 
 class App extends Component {
   // handlePersistorState = () => {
@@ -53,6 +54,7 @@ class App extends Component {
                   path={path.LOGIN}
                   component={userIsNotAuthenticated(Login)}
                 />
+                <Route path={path.REGISTER} component={Register} />
                 <Route
                   path={path.SYSTEM}
                   component={userIsAuthenticated(System)}

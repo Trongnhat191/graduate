@@ -45,30 +45,29 @@
       justify-content: flex-end;
       padding-right: 1rem;
       position: relative;
+      display:flex;
 
       .login-button {
         position: relative;
         display: flex;
         align-items: center;
-
-        a.btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          background-color: #007bff;
-          color: #fff;
-          padding: 0.6rem 1.2rem;
-          font-size: 1rem;
-          border-radius: 8px;
-          text-decoration: none;
-          transition: background-color 0.3s ease;
-
-          &:hover {
-            background-color: #0056b3;
+        .login-button-wrapper{
+          display: flex;
+          .login{
+            font-size: 16px;
+            // color: #333;
+            // font-weight: 500;
+            margin-right: 10px;
           }
-
-          &:active {
-            background-color: #004494;
+          .link-separator {
+            border-right: 2px solid hsla(0, 0%, 0%, 0.4);
+            height: .9999rem;
+          }
+          .register{
+            font-size: 16px;
+            // color: #333;
+            // font-weight: 500;
+            margin-left: 10px;
           }
         }
         .user-menu-wrapper{

@@ -36,10 +36,10 @@ class HomeHeader extends Component {
                     <div className="right-content">
                         <div className="login-button">
                             {!isLoggedIn ? (
-                                <div>
-                                    <a href="/login" className="btn btn-primary">
-                                        Đăng nhập
-                                    </a>
+                                <div className="login-button-wrapper">
+                                    <a href="/login" className="login">Đăng nhập</a>
+                                    <div className="link-separator"></div>
+                                    <a href="/register" className="register">Đăng ký</a>
                                 </div>
                             ) : (
                                 <div className="user-menu-wrapper">

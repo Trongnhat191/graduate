@@ -72,25 +72,25 @@ class Login extends Component {
       <div className="login-background">
         <div className="login-container">
           <div className="login-content row">
-            <div className="col-12 text-login">Login</div>
+            <div className="col-12 text-login">Đăng nhập</div>
             <div className="col-12 form-group login-input">
-              <label>Username</label>
+              {/* <label>Tên đăng nhập</label> */}
               <input
                 type="text"
                 className="form-control"
-                placeholder="Enter your username"
+                placeholder="Tên đăng nhập"
                 // gia tri của this.state.username sẽ hiện ở trên Username của web
                 value={this.state.username}
                 onChange={(event) => this.handleOnChaneUsername(event)}
               />
             </div>
             <div className="col-12 form-group login-input">
-              <label>Password</label>
+              {/* <label>Password</label> */}
               <div className="custom-input-password">
                 <input
                   type={this.state.isShowPassword ? "text" : "password"}
                   className="form-control"
-                  placeholder="Enter your password"
+                  placeholder="Mật khẩu"
                   onChange={(event) => this.handleOnChanePassword(event)}
                 ></input>
                 <span onClick={() => this.handleShowPassword()}>
@@ -116,6 +116,13 @@ class Login extends Component {
               >
                 Login
               </button>
+            </div>
+
+            <a href='/forgot-password' className="forgot-password">Quên mật khẩu?</a>
+
+            <div style = {{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+              <span className="register">Chưa có tài khoản?</span>
+              <a href='/register'> Đăng ký</a>
             </div>
           </div>
         </div>
