@@ -26,7 +26,7 @@ class HomeHeader extends Component {
                 <div className="home-header-content">
                     <div className="left-content">
                         {/* <div className="left-content"> */}
-                            <span className="home-logo" onClick={() => this.props.onChangeView("P")}>
+                            <span className="home-logo" onClick={() => this.props.onChangeView("Parking")}>
                                 🅿️ Smart Parking
                             </span>
                         {/* </div> */}
@@ -52,7 +52,8 @@ class HomeHeader extends Component {
                                     {this.state.showMenu && (
                                         <div className="user-dropdown-menu">
                                             <a className="dropdown-item" onClick={this.props.onShowProfile}>Thông tin cá nhân</a>
-                                            <a className="dropdown-item" onClick={() => this.props.onChangeView("H")}>Lịch sử</a>
+                                            <a className="dropdown-item" onClick={() => this.props.onChangeView("BuyMonthTicket")}>Mua vé tháng</a>
+                                            <a className="dropdown-item" onClick={() => this.props.onChangeView("History")}>Lịch sử</a>
                                             <a className="dropdown-item" onClick={processLogout}>Đăng xuất</a>
                                         </div>
                                     )}

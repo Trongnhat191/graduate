@@ -2,15 +2,17 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import HomeHeader from "./HomeHeader";
 import ParkingStatus from "./Section/ParkingStatus";
-import ModalShowProfile from "./ModalShowProfile";
 import History from "./Section/History"
+import BuyMonthTicket from "./Section/BuyMonthTicket";
+
+import ModalShowProfile from "./ModalShowProfile";
 
 class HomePage extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 		  isShowProfileModal: false,
-		  currentView: "P",
+		  currentView: "Parking",
 		};
 	  }
 	
@@ -44,8 +46,9 @@ class HomePage extends Component {
 				</div>
 
 				<div className="home-page-body">
-					{this.state.currentView === "P" && <ParkingStatus/>}
-					{this.state.currentView === "H" && <History/>}
+					{this.state.currentView === "Parking" && <ParkingStatus/>}
+					{this.state.currentView === "History" && <History/>}
+					{this.state.currentView === "BuyMonthTicket" && <BuyMonthTicket/>}
 				</div>
 				
 			</div>

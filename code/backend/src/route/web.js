@@ -3,8 +3,15 @@ import homeController from "../controllers/homeController.js";
 import userController from "../controllers/userController.js";
 import sensorController from "../controllers/sensorController.js";
 import carController from "../controllers/carController.js";
-
+import { callbackMomoPayment, createMomoPayment } from "../controllers/paymentController.js";
+import crypto from "crypto";
+import axios from "axios";
+import dotenv from "dotenv";
+dotenv.config();
 let router = express.Router();
+
+const ACCESSKEY = process.env.ACCESSKEY;
+const SECRETKEY = process.env.SECRETKEY;
 
 let initWebRoutes = (app) => {
   // ------------------------
@@ -31,14 +38,16 @@ let initWebRoutes = (app) => {
   router.delete("/api/delete-user", userController.handleDeleteUser);
 
   router.post("/update", sensorController.handleUpdate);
-  router.post("/manual-plate-correction",sensorController.handlemanualPlateCorrectionEntry);
-  router.post("/manual-plate-correction-exit",sensorController.handlemanualPlateCorrectionExit);
+  router.post("/manual-plate-correction", sensorController.handlemanualPlateCorrectionEntry);
+  router.post("/manual-plate-correction-exit", sensorController.handlemanualPlateCorrectionExit);
   router.post("/api/create-new-car", carController.handleCreateNewCar);
 
-  // const checkResponse = await axios.get(`http://localhost:6969/api/check-plate/${plate}`);
-  // router.get('/api/check-plate/:plate', carController.handleCheckPlate);
-  // create parking logs
-  // router.post('/api/create-parking-logs', carController.handleCreateParkingLogs);
+
+  router.post("/api/momo/payment", createMomoPayment);
+
+  router.post("/api/momo/callback", callbackMomoPayment);
+
+
   return app.use("/", router);
 };
 
