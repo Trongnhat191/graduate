@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createMomoPayment } from '../../../services/paymentService';
+import { createMomoPayment, getTicketInfoByNumberPlate } from '../../../services/paymentService';
 import './BuyMonthTicket.scss';
 class BuyMonthTicket extends Component {
 
@@ -11,14 +11,27 @@ class BuyMonthTicket extends Component {
             month: 1,
             totalPrice: 10000,
             payUrl: '',
+            userId: '',
+            numberPlate: '',
+            endDate: '',
         }
     }
 
     componentDidMount() {
+        const {userInfo} = this.props;
         const pricePerMonth = 10000;
-        this.setState({
-            totalPrice: this.state.month * pricePerMonth
-        })
+
+        if (userInfo) {
+            this.setState({
+                userId: userInfo.id,
+                numberPlate: userInfo['cars.numberPlate'],
+                totalPrice: this.state.month * pricePerMonth
+            }, () => {
+                if (this.state.numberPlate) {
+                    this.handleGetTicketInfo(this.state.numberPlate);
+                }
+            })
+        }
     }
 
     pay = async (data) => {
@@ -28,6 +41,9 @@ class BuyMonthTicket extends Component {
         this.setState({
             payUrl: res.payUrl
         })
+        if (this.state.numberPlate){
+            this.handleGetTicketInfo(this.state.numberPlate);
+        }
     }
 
     handleOnChangeMonth = (event) => {
@@ -42,10 +58,28 @@ class BuyMonthTicket extends Component {
             totalPrice: totalPrice
         })
     }
+
+    handleGetTicketInfo = async (numberPlate) => {
+        let res = await getTicketInfoByNumberPlate(numberPlate);
+        if (res && res.errCode === 0) {
+            this.setState({
+                endDate: res.ticketInfo.endDate,
+            })
+        } else {
+            alert(res.errMessage);
+        }
+    }
+
     render() {
         return (
             
             <div className="text-center">
+                <div className='current-ticket-info'>
+                    <h3>Thông tin vé hiện tại</h3>
+                    <p>Biển số xe: {this.state.numberPlate}</p>
+                    <p>Ngày hết hạn vé: {this.state.endDate}</p>
+
+                </div>
                 <div className="form-group">
                     <span>
                         <label htmlFor="month">Số tháng</label>
@@ -69,7 +103,7 @@ class BuyMonthTicket extends Component {
                     </span>
                 </div>
 
-                <button className="btn btn-primary" onClick={() => this.pay({...this.state, userId: this.props.userId})}>
+                <button className="btn btn-primary" onClick={() => this.pay({...this.state, userId: this.state.userId})} disabled={!this.state.numberPlate}>
                     Thanh toán
                 </button>
                 {this.state.payUrl && (
@@ -92,7 +126,9 @@ class BuyMonthTicket extends Component {
 const mapStateToProps = state => {
     return {
         // Các state từ Redux store mà component này cần sử dụng
-        userId: state.user.userInfo.id,
+        // userId: state.user.userInfo.id,
+        // numberPlate: state.user.userInfo['cars.numberPlate'],
+        userInfo: state.user.userInfo,
     };
 };
 

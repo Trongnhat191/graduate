@@ -9,27 +9,26 @@ let handleCreateNewCar = async (req, res) => {
     });
 }
 
-// let handleCheckPlate = async (req, res) => {
-//     let plate = req.params.plate;
-//     let message = await carService.checkPlate(plate);
-//     return res.status(200).json({
-//         carId: message.carId,
-//         errCode: message.errCode,
-//         message: message.errMessage
-//     });
-// }
+let handleGetTicketInfoByNumberPlate = async (req, res) => {
+    // console.log('check req.query', req.query);
+    let numberPlate = req.query.numberPlate;
+    if (!numberPlate) {
+        return res.status(200).json({
+            errCode: 1,
+            errMessage: 'Missing required parameters'
+        });
+    }
+    let message = await carService.getTicketInfoByNumberPlate(numberPlate);
+    // console.log('check message', message);
+    return res.status(200).json({
+        errCode: message.errCode,
+        errMessage: message.errMessage,
+        ticketInfo: message.ticketInfo ? message.ticketInfo : {}
+    });
+}
 
-// let handleCreateParkingLogs = async (req, res) => {
-//     let data = req.body;
-//     // console.log("data from client: ", data);
-//     let message = await carService.createParkingLogs(data);
-//     return res.status(200).json({
-//         errCode: 0,
-//         message: 'OK'
-//     });
-// }
 export default {
     handleCreateNewCar: handleCreateNewCar,
-    // handleCheckPlate: handleCheckPlate,
-    // handleCreateParkingLogs: handleCreateParkingLogs
+    handleGetTicketInfoByNumberPlate: handleGetTicketInfoByNumberPlate
+
 }

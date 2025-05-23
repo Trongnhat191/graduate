@@ -73,16 +73,28 @@ let checkUserAccount = (userAccount) => {
   });
 };
 
+let getUserInfoById = (userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let user = await db.User.findOne({
+        where: { id: userId },
+        attributes: {
+          exclude: ["password"],
+        },
+        raw: true,
+      });
+      resolve(user);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 let getAllUsersAndNumberPlate = (userId) => {
   return new Promise(async (resolve, reject) => {
     try {
       let users = "";
       if (userId === "ALL") {
-        // users = await db.User.findAll({
-        //     attributes: {
-        //         exclude: ['password']
-        //     }
-        // });
         users = await db.User.findAll({
           attributes: {
             exclude: ["password"],
@@ -98,14 +110,7 @@ let getAllUsersAndNumberPlate = (userId) => {
           nest: true,
         });
       }
-      // console.log('users', users);
       if (userId && userId !== "ALL") {
-        // users = await db.User.findOne({
-        //     where: { id: userId },
-        //     attributes: {
-        //         exclude: ['password']
-        //     }
-        // });
         users = await db.User.findOne({
           where: { id: userId },
           attributes: {
@@ -123,7 +128,6 @@ let getAllUsersAndNumberPlate = (userId) => {
         });
       }
       resolve(users);
-      // console.log('users', users);
     } catch (e) {
       reject(e);
     }
@@ -251,4 +255,5 @@ export default {
   createNewUser: createNewUser,
   deleteUser: deleteUser,
   editUser: editUser,
+  getUserInfoById: getUserInfoById,
 };

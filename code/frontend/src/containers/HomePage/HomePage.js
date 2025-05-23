@@ -4,7 +4,7 @@ import HomeHeader from "./HomeHeader";
 import ParkingStatus from "./Section/ParkingStatus";
 import History from "./Section/History"
 import BuyMonthTicket from "./Section/BuyMonthTicket";
-
+import RechargeBalance from "./Section/RechargeBalance";
 import ModalShowProfile from "./ModalShowProfile";
 
 class HomePage extends Component {
@@ -49,6 +49,7 @@ class HomePage extends Component {
 					{this.state.currentView === "Parking" && <ParkingStatus/>}
 					{this.state.currentView === "History" && <History/>}
 					{this.state.currentView === "BuyMonthTicket" && <BuyMonthTicket/>}
+					{this.state.currentView === "RechargeBalance" && <RechargeBalance/>}
 				</div>
 				
 			</div>

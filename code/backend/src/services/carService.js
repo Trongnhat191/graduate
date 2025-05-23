@@ -21,56 +21,45 @@ let createNewCar = (data) => {
     });
 }
 
-let checkPlate = (plate) => {
+let getTicketInfoByNumberPlate = (numberPlate) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let car = await db.Car.findOne({
-                where: { numberPlate: plate }
-            });
-            if (car) {
+            let carId = await db.Car.findOne({
+                where: { numberPlate: numberPlate },
+                raw: false
+            })
+            if (!carId) {
                 resolve({
-                    carId: car.id,
                     errCode: 1,
-                    errMessage: 'Biển số đã tồn tại'
-                });
-            } else {
-                resolve({
-                    errCode: 0,
-                    errMessage: 'Biển số chưa tồn tại'
+                    errMessage: 'Car not found',
+                    ticketInfo: {}
                 });
             }
+            let ticketInfo = await db.Ticket.findOne({
+                where: { carId: carId.id },
+                raw: false
+            })
+            if (!ticketInfo) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Ticket not found',
+                    ticketInfo: {}
+                });
+            }
+            resolve({
+                errCode: 0,
+                errMessage: 'OK',
+                ticketInfo: ticketInfo
+            });
         } catch (e) {
             console.log('error: ', e);
             reject(e);
         }
-    });
+    })
 }
 
-// let createParkingLogs = (data) => {
-//     return new Promise(async (resolve, reject) => {
-//         try {
-//             // console.log('check data', data);
-//                 let newParkingLogs =  await db.ParkingLog.create({
-//                     carId: data.carId,
-//                     checkInTime: data.checkInTime,
-//                     checkOutTime: data.checkOutTime,
-//                     imagePath: data.imagePath,
-//                     recognized: data.recognized,
-//                     status: data.status
-//                 });
-//                 resolve({
-//                     errCode: 0,
-//                     errMessage: 'OK'
-//                 });
-//             // }
-//         } catch (e) {
-//             console.log('error: ', e);
-//             reject(e);
-//         }
-//     });
-// }    
+
 export default {
     createNewCar: createNewCar,
-    // checkPlate: checkPlate,
-    // createParkingLogs: createParkingLogs
+    getTicketInfoByNumberPlate: getTicketInfoByNumberPlate
 }

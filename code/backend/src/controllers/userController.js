@@ -47,6 +47,26 @@ let handleGetAllUsers = async (req, res) => {
     });
 }
 
+let handleGetUserInfoById = async (req, res) => {
+    let id = req.query.id;
+
+    if (!id) {
+        return res.status(200).json({
+            errCode: 1,
+            message: 'Missing input parameters',
+            user: {}
+        });
+    }
+
+    let user = await userService.getUserInfoById(id);
+
+    return res.status(200).json({
+        errCode: 0,
+        message: 'OK',
+        user
+    });
+}
+
 let handleCreateNewUser = async (req, res) => {
     let message = await userService.createNewUser(req.body);
     return res.status(200).json({
@@ -82,5 +102,6 @@ export default {
     handleGetAllUsers: handleGetAllUsers,
     handleCreateNewUser: handleCreateNewUser,
     handleEditUser: handleEditUser,
-    handleDeleteUser: handleDeleteUser
+    handleDeleteUser: handleDeleteUser,
+    handleGetUserInfoById: handleGetUserInfoById,
 }

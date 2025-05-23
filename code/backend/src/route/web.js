@@ -3,7 +3,7 @@ import homeController from "../controllers/homeController.js";
 import userController from "../controllers/userController.js";
 import sensorController from "../controllers/sensorController.js";
 import carController from "../controllers/carController.js";
-import { callbackMomoPayment, createMomoPayment } from "../controllers/paymentController.js";
+import { callbackMomoPayment, createMomoPayment, rechargeBalance, callbackRechargeBalance } from "../controllers/paymentController.js";
 import crypto from "crypto";
 import axios from "axios";
 import dotenv from "dotenv";
@@ -36,17 +36,21 @@ let initWebRoutes = (app) => {
   router.post("/api/create-new-user", userController.handleCreateNewUser);
   router.put("/api/edit-user", userController.handleEditUser);
   router.delete("/api/delete-user", userController.handleDeleteUser);
+  router.get("/api/get-user-info-by-id", userController.handleGetUserInfoById);
 
   router.post("/update", sensorController.handleUpdate);
   router.post("/manual-plate-correction", sensorController.handlemanualPlateCorrectionEntry);
   router.post("/manual-plate-correction-exit", sensorController.handlemanualPlateCorrectionExit);
   router.post("/api/create-new-car", carController.handleCreateNewCar);
+  router.get("/api/get-ticket-info-by-number-plate", carController.handleGetTicketInfoByNumberPlate);
 
-
+  // Momo payment month ticket
   router.post("/api/momo/payment", createMomoPayment);
-
   router.post("/api/momo/callback", callbackMomoPayment);
 
+  // Momo payment recharge 
+  router.post("/api/momo/recharge", rechargeBalance);
+  router.post("/api/momo/callback-recharge", callbackRechargeBalance);
 
   return app.use("/", router);
 };

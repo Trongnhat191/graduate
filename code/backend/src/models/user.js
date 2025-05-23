@@ -27,7 +27,8 @@ module.exports = (sequelize, DataTypes) => {
     pId: DataTypes.STRING,
     address: DataTypes.STRING,
     phoneNumber: DataTypes.STRING,
-    gender: DataTypes.ENUM('male', 'female')
+    gender: DataTypes.ENUM('male', 'female'),
+    balance: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'User',

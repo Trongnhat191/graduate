@@ -4,6 +4,10 @@ const handleLoginApi = (account, password) => {
     return axios.post('/api/login',{account,password});
 }
 
+const getUserInfoById = (userId) => {
+    return axios.get(`/api/get-user-info-by-id?id=${userId}`);
+}
+
 const getAllUsersAndNumberPlate = (inputId) => {
     return axios.get(`/api/get-all-users?id=${inputId}`);
 }
@@ -28,5 +32,6 @@ export {
     getAllUsersAndNumberPlate,
     createNewUserService,
     deleteUserService ,
-    editUserService
+    editUserService,
+    getUserInfoById
 }

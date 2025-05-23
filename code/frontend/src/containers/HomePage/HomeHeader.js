@@ -53,8 +53,9 @@ class HomeHeader extends Component {
                                         <div className="user-dropdown-menu">
                                             <a className="dropdown-item" onClick={this.props.onShowProfile}>Thông tin cá nhân</a>
                                             <a className="dropdown-item" onClick={() => this.props.onChangeView("BuyMonthTicket")}>Mua vé tháng</a>
+                                            <a className="dropdown-item" onClick={() => this.props.onChangeView("RechargeBalance")}>Nạp tiền vé ngày</a>
                                             <a className="dropdown-item" onClick={() => this.props.onChangeView("History")}>Lịch sử</a>
-                                            <a className="dropdown-item" onClick={processLogout}>Đăng xuất</a>
+                                            <a className="dropdown-item" onClick={() => { processLogout(); this.props.onChangeView("Parking"); }}>Đăng xuất</a>
                                         </div>
                                     )}
                                 </div>
