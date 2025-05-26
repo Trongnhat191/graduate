@@ -24,8 +24,8 @@ h1 {
 }
 
 .card {
-  width: 200px;
-  height: 200px;
+  width: 100px;
+  height: 100px;
   background: white;
   border-radius: 20px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
@@ -36,9 +36,13 @@ h1 {
   transition: 0.3s ease;
 }
 
-.card .icon {
+.card .icon  {
   font-size: 48px;
   margin-bottom: 10px;
+  img {
+    width: 30px;
+    height: 48px;
+  }
 }
 
 .card .slot-label {

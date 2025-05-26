@@ -2,7 +2,7 @@ import { createMomoPaymentService, callbackMomoPaymentService, rechargeBalanceSe
 
 export const createMomoPayment = async (req, res) => {
   try {
-    // console.log("check data from paymentcontroller", req.body);
+    console.log("check data from paymentcontroller", req.body);
     const { month, userId } = req.body;
     const amount = req.body.totalPrice;
     const result = await createMomoPaymentService(amount, userId, month);

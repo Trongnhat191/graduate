@@ -66,7 +66,10 @@ class BuyMonthTicket extends Component {
                 endDate: res.ticketInfo.endDate,
             })
         } else {
-            alert(res.errMessage);
+            this.setState({
+                endDate: '',
+            });
+            console.error("Error fetching ticket info:", res.errMessage);
         }
     }
 
@@ -77,7 +80,7 @@ class BuyMonthTicket extends Component {
                 <div className='current-ticket-info'>
                     <h3>Thông tin vé hiện tại</h3>
                     <p>Biển số xe: {this.state.numberPlate}</p>
-                    <p>Ngày hết hạn vé: {this.state.endDate}</p>
+                    <p>Ngày hết hạn vé: {this.state.endDate ? this.state.endDate : "Chưa mua vé"}</p>
 
                 </div>
                 <div className="form-group">

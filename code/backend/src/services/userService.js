@@ -249,6 +249,59 @@ let editUser = (data) => {
     }
   });
 };
+
+let payMoney = (userId, fee) => {  return new Promise(async (resolve, reject) => {
+    try {
+      let user = await db.User.findOne({
+        where: { id: userId },
+        raw: false,
+      });
+      // console.log('check user', user);
+      if (user) {
+        if (user.balance < fee) {
+          resolve({
+            errCode: 2,
+            errMessage: "Not enough money",
+          });
+          return;
+        }
+        user.balance = user.balance - fee;
+        await user.save();
+        resolve({
+          errCode: 0,
+          errMessage: "Pay money successfully",
+        });
+      } else {
+        resolve({
+          errCode: 1,
+          errMessage: "User does not exist",
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+let findUserIdByNumberPlate = (numberPlate) =>{
+  return new Promise(async(resolve, reject) => {
+    try {
+      let user = await db.Car.findOne({
+        where: { numberPlate: numberPlate },
+        raw: true,
+      });
+      if (user) {
+        resolve(user.userId);
+      } else {
+        resolve(false);
+      }
+    } 
+    catch (e) {
+      reject(e);
+    }
+  })
+}
+
 export default {
   handleUserLogin: handleUserLogin,
   getAllUsersAndNumberPlate: getAllUsersAndNumberPlate,
@@ -256,4 +309,6 @@ export default {
   deleteUser: deleteUser,
   editUser: editUser,
   getUserInfoById: getUserInfoById,
+  findUserIdByNumberPlate: findUserIdByNumberPlate,
+  payMoney: payMoney,
 };

@@ -2,7 +2,7 @@ import { exec } from "child_process";
 import axios from "axios";
 import db from "../models/index.js";
 import { create } from "domain";
-// import { create } from 'domain';
+import userService from "./userService.js";
 
 let currentStatus = {
     slot1: "empty",
@@ -15,6 +15,7 @@ let currentStatus = {
     currentNumberPlateOut: "",
     imageOut: "",
     ticketTypeOut: "",
+    fee: 0,
 };
 
 let entryHandle = false;
@@ -110,7 +111,7 @@ let createNewTicket = async (carId) => {
                 ticketType: "day",
                 startDate: new Date(),
                 endDate: null, // 1 hour
-                price: 10,
+                price: 10000,
             });
             resolve(ticket);
         } catch (e) {
@@ -138,7 +139,7 @@ let findCarIdByPlate = async (plate) => {
     });
 };
 
-let updateCheckOutTime = async (carId) => {
+let updateCheckOutTimeAndFee = async (carId, fee) => {
     return new Promise(async (resolve, reject) => {
         try {
             const parkingLog = await db.ParkingLog.findOne({
@@ -151,6 +152,7 @@ let updateCheckOutTime = async (carId) => {
             });
             if (parkingLog) {
                 parkingLog.checkOutTime = new Date();
+                parkingLog.fee = fee;
                 await parkingLog.save();
                 resolve(parkingLog);
             } else {
@@ -202,10 +204,11 @@ let checkIfTicketTypeIsMonth = async (carId) => {
                 },
             });
             console.log("ticket: ", ticket.ticketType);
+            console.log("ticket: ", ticket.id);
             if (ticket) {
                 if (ticket.ticketType === "month") {
                     resolve(true);
-                    // console.log("ticket: ", ticket);
+                    console.log("ticket: ", ticket.id);
                 } else {
                     resolve(false);
                 }
@@ -252,7 +255,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
         entryHandle = true;
         response.openEntryServo = true;
         exec(
-            "conda run -n graduate python src/python/detect_plate.py 2 src/public/photos/entry",
+            "conda run -n graduate python src/python/detect_plate.py 0 src/public/photos/entry",
             async (err, stdout, stderr) => {
                 if (err) {
                     console.log("---------------------");
@@ -350,7 +353,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
         exitHandle = true;
         response.openExitServo = true;
         exec(
-            "conda run -n graduate python src/python/detect_plate.py 2 src/public/photos/exit",
+            "conda run -n graduate python src/python/detect_plate.py 0 src/public/photos/exit",
             async (err, stdout, stderr) => {
                 if (err) {
                     console.log("---------------------");
@@ -378,23 +381,39 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
                             broadcastStatus(currentStatus);
                             return;
                         }
-                        await updateCheckOutTime(carId);
-                        console.log(
-                            "[Exit Car] ✅ Đã cập nhật thời gian ra cho biển số: ",
-                            plate
-                        );
 
                         const isMonthTicket = await checkIfTicketTypeIsMonth(carId);
-                        if (isMonthTicket) {
+                        if (isMonthTicket) {  // Nếu là vé tháng
                             console.log(
                                 `[Exit Car] ✅ Vé tháng, không tính phí cho biển số ${plate}`
                             );
+                            await updateCheckOutTimeAndFee(carId, 0);
                             currentStatus.ticketTypeOut = "month";
-                        } else {
+                        } else {  // Nếu là vé ngày
                             const timeDiff = await updateEndDate(carId);
-                            console.log(
-                                `[Exit Car] ✅ Vé ngày, đã tính phí cho biển số ${plate}`
+                            const fee = 10000 * timeDiff;
+                            currentStatus.fee = fee;
+                            await updateCheckOutTimeAndFee(carId, fee);
+                            const userId = await userService.findUserIdByNumberPlate(plate);
+                            const paymentResponse = await userService.payMoney(
+                                userId,
+                                fee
                             );
+                            if (paymentResponse.errCode === 0) {
+                                console.log(
+                                    paymentResponse.errMessage
+                                );
+                            }
+                            else if (paymentResponse.errCode === 2) {
+                                console.log(
+                                    paymentResponse.errMessage
+                                );
+                            }
+                            else {
+                                console.log(
+                                    paymentResponse.errMessage
+                                );
+                            }
                             currentStatus.ticketTypeOut = "day";
                         }
                         broadcastStatus(currentStatus);
@@ -500,21 +519,40 @@ export const manualPlateCorrectionEntry = async (wrongPlate, correctPlate) => {
 export const manualPlateCorrectionExit = async (correctPlate) => {
     try {
         const carId = await findCarIdByPlate(correctPlate);
-        await updateCheckOutTime(carId);
-        console.log(
-            "[Exit Car] ✅ Đã cập nhật thời gian ra cho biển số: ",
-            correctPlate
-        );
+
         if (checkIfTicketTypeIsMonth(carId)) {// Nếu là vé tháng
             console.log(
                 `[Exit Car] ✅ Vé tháng, không tính phí cho biển số ${correctPlate}`
             );
+            await updateCheckOutTimeAndFee(carId, 0);
         }
         else {// Nếu là vé ngày
             const timeDiff = await updateEndDate(carId);
             console.log(
                 `[Exit Car] ✅ Vé ngày, đã tính phí cho biển số ${correctPlate}: ${timeDiff} ngày`,
             );
+            const fee = 10000 * timeDiff;
+            currentStatus.fee = fee;
+            broadcastStatus(currentStatus);
+            const userId = await userService.findUserIdByNumberPlate(correctPlate);
+            const paymentResponse = await userService.payMoney(userId, fee);
+            if (paymentResponse.errCode === 0) {
+                console.log(
+                    paymentResponse.errMessage
+                );
+            }
+            else if (paymentResponse.errCode === 2) {
+                console.log(
+                    paymentResponse.errMessage
+                );
+            }
+            else {
+                console.log(
+                    paymentResponse.errMessage
+                );
+            }
+            await updateCheckOutTimeAndFee(carId, fee);
+
         }
         return { success: true, message: "Đã sửa biển số và cập nhật dữ liệu" };
 
@@ -524,6 +562,9 @@ export const manualPlateCorrectionExit = async (correctPlate) => {
         return { success: false, message: "Lỗi khi sửa biển số" };
     }
 };
+
+
+
 const broadcastStatus = (status) => {
     for (const client of wssClients) {
         if (client.readyState === 1) {

@@ -26,7 +26,7 @@ function ParkingStatus() {
 
   const renderSlot = (slotNumber, state) => (
     <div className={`card ${state}`}>
-      <div className="icon">🅿️</div>
+      <div className="icon"><img src = "/images.png"/></div>
       <div className="slot-label">Vị trí {slotNumber}</div>
       <div className="status-text">
         {state === 'occupied' ? 'Đang có xe' : 'Còn trống'}

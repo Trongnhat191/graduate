@@ -16,6 +16,7 @@ class StaffManage extends Component {
 			currentNumberPlateOut: "",
 			imageOut: "",
 			ticketTypeOut: "",
+			fee: "",
 		};
 	}
 
@@ -24,17 +25,26 @@ class StaffManage extends Component {
 
 		this.ws.onmessage = (event) => {
 			const data = JSON.parse(event.data);
+			// console.log("check data from ws", data);
+		
+			// Cập nhật dữ liệu vào nếu có
 			if (data.currentNumberPlateIn) {
 				this.setState({
 					newNumberPlateIn: "",
 					currentNumberPlateIn: data.currentNumberPlateIn,
 					imageIn: data.imageIn,
 					ticketTypeIn: data.ticketTypeIn,
-
+				});
+			}
+		
+			// Cập nhật dữ liệu ra nếu có
+			if (data.currentNumberPlateOut) {
+				this.setState({
 					newNumberPlateOut: "",
 					currentNumberPlateOut: data.currentNumberPlateOut,
 					imageOut: data.imageOut,
 					ticketTypeOut: data.ticketTypeOut,
+					fee: data.fee,
 				});
 			}
 		};
@@ -98,9 +108,12 @@ class StaffManage extends Component {
 			alert("Có lỗi xảy ra khi cập nhật biển số!");
 		}
 	}
+
+	
+
 	render() {
 		return (
-			console.log("from render StaffMange", this.state),
+			// console.log("from render StaffMange", this.state),
 			(
 				<div className="staff-manage-container">
 					<div className="staff-manage-content">
@@ -156,6 +169,7 @@ class StaffManage extends Component {
 
 							<div className="content-right">
 								<div className="content-left-title">CỬA RA</div>
+
 								<div className="image-in">
 									<img
 										src={
@@ -163,42 +177,57 @@ class StaffManage extends Component {
 										}
 									/>
 								</div>
-								<div className="current-number-plate">
-									<div className="current-number-plate-title">
-										Biển số hiện tại
+								<div className="right-info">
+									<div className="right-info-1">
+										<div className="current-number-plate">
+											<div className="current-number-plate-title">
+												Biển số hiện tại
+											</div>
+											<div className="current-number-plate-content">
+												{this.state.currentNumberPlateOut || "Chưa có dữ liệu"}
+											</div>
+										</div>
+										<div className="ticket-type">
+											<div className="ticket-type-title">Loại vé</div>
+											<div className="ticket-type-content">
+												{this.state.ticketTypeOut === "month"
+													? "Vé tháng"
+													: this.state.ticketTypeOut === "day"
+														? "Vé ngày"
+														: "Chưa có dữ liệu"}
+											</div>
+										</div>
+										<div className="new-number-plate">
+											<div className="new-number-plate-title">Biển số mới</div>
+											<input
+												className="new-number-plate-input"
+												onChange={(event) => {
+													this.handleOnChangeInputOut(event);
+												}}
+												type="text"
+												placeholder="Nhập biển số mới"
+											/>
+											<button
+												className="new-number-plate-button"
+												onClick={() => {
+													this.handlenewNumberPlateOutUpdate();
+												}}
+											>
+												Cập nhật
+											</button>
+										</div>
 									</div>
-									<div className="current-number-plate-content">
-										{this.state.currentNumberPlateOut || "Chưa có dữ liệu"}
+									<div className="right-info-2">
+										<div>
+											Số tiền
+										</div>
+										<div>
+											{this.state.fee ? this.state.fee + " VNĐ" : "Chưa có dữ liệu"}
+										</div>
+										<button className="right-info-button" >
+											Thanh toán
+										</button>
 									</div>
-								</div>
-								<div className="ticket-type">
-									<div className="ticket-type-title">Loại vé</div>
-									<div className="ticket-type-content">
-										{this.state.ticketTypeOut === "month"
-											? "Vé tháng"
-											: this.state.ticketTypeOut === "day"
-												? "Vé ngày"
-												: "Chưa có dữ liệu"}
-									</div>
-								</div>
-								<div className="new-number-plate">
-									<div className="new-number-plate-title">Biển số mới</div>
-									<input
-										className="new-number-plate-input"
-										onChange={(event) => {
-											this.handleOnChangeInputOut(event);
-										}}
-										type="text"
-										placeholder="Nhập biển số mới"
-									/>
-									<button
-										className="new-number-plate-button"
-										onClick={() => {
-											this.handlenewNumberPlateOutUpdate();
-										}}
-									>
-										Cập nhật
-									</button>
 								</div>
 							</div>
 						</div>

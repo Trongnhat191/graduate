@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     checkInTime: DataTypes.DATE,
     checkOutTime: DataTypes.DATE,
     imagePath: DataTypes.STRING,
-    recognized: DataTypes.BOOLEAN,
+    fee: DataTypes.INTEGER,
     status: DataTypes.ENUM('in', 'out')
   }, {
     sequelize,

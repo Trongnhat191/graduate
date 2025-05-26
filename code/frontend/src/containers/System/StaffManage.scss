@@ -30,14 +30,17 @@
                     }
                 }
             }
-            // .content-right{
-            //     display: flex;
-            //     justify-content: center;
-            //     width: 50%;
-            //     padding: 20px;
-            //     height: 100%;
-            //     background-color: #e0e0e0;
-            // }
+            .content-right{
+                .right-info{
+                    display: flex;
+                    .right-info-1{
+                        width: 50%;
+                    }
+                    .right-info-2{
+                        width: 50%;
+                    }
+                }
+            }
         }
     }
 }
