@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import "./StaffManage.scss";
 import imageIn from "../../assets/images/test.png";
-import { manualPlateCorrectionEntry, manualPlateCorrectionExit } from "../../services/sensorService";
+import { manualPlateCorrectionEntry, manualPlateCorrectionExit, manualPaymentConfirm } from "../../services/sensorService";
 class StaffManage extends Component {
 	constructor(props) {
 		super(props);
@@ -108,8 +108,41 @@ class StaffManage extends Component {
 			alert("Có lỗi xảy ra khi cập nhật biển số!");
 		}
 	}
+	handleManualPaymentConfirm = async () => {
+		console.log("check state from handleManualPaymentConfirm", this.state);
+		const fee = this.state.fee;
+		const numberPlate = this.state.currentNumberPlateOut;
 
-	
+		if (!numberPlate) {
+            alert("Không có thông tin biển số xe ra.");
+            return;
+        }
+
+        if (fee === "" || fee === null || fee === undefined) {
+            alert("Không có thông tin phí hoặc phí bằng 0.");
+            return;
+        }
+
+        try {
+            let response = await manualPaymentConfirm(fee, numberPlate);
+            if (response && response.errCode === 0) {
+                alert(response.errMessage || "Thanh toán thành công!");
+                // Optionally, clear the fee or update UI as needed
+                this.setState({
+                    fee: "", // Clear fee after successful payment
+                    // currentNumberPlateOut: "", // Optionally clear number plate
+                    // imageOut: "", // Optionally clear image
+                    // ticketTypeOut: "" // Optionally clear ticket type
+                });
+            } else {
+                alert(response?.errMessage || "Thanh toán thất bại!");
+            }
+        } catch (err) {
+            console.error("Lỗi khi xác nhận thanh toán thủ công:", err);
+            alert("Có lỗi xảy ra khi xác nhận thanh toán thủ công!");
+        }
+	}
+
 
 	render() {
 		return (
@@ -224,7 +257,8 @@ class StaffManage extends Component {
 										<div>
 											{this.state.fee ? this.state.fee + " VNĐ" : "Chưa có dữ liệu"}
 										</div>
-										<button className="right-info-button" >
+										<button className="right-info-button" onClick={() => {
+											this.handleManualPaymentConfirm();}}>
 											Thanh toán
 										</button>
 									</div>

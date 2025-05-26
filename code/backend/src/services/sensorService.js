@@ -203,12 +203,12 @@ let checkIfTicketTypeIsMonth = async (carId) => {
                     carId: carId,
                 },
             });
-            console.log("ticket: ", ticket.ticketType);
-            console.log("ticket: ", ticket.id);
+            // console.log("ticket: ", ticket.ticketType);
+            // console.log("ticket: ", ticket.id);
             if (ticket) {
                 if (ticket.ticketType === "month") {
                     resolve(true);
-                    console.log("ticket: ", ticket.id);
+                    // console.log("ticket: ", ticket.id);
                 } else {
                     resolve(false);
                 }
@@ -399,18 +399,20 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
                                 userId,
                                 fee
                             );
-                            if (paymentResponse.errCode === 0) {
-                                console.log(
+                            if (paymentResponse.errCode === 0) { // Thanh toán thành công
+                                console.log( 'log from sensorService.js',
                                     paymentResponse.errMessage
                                 );
                             }
-                            else if (paymentResponse.errCode === 2) {
-                                console.log(
+                            else if (paymentResponse.errCode === 2) { // Không đủ tiền
+                                console.log('log from sensorService.js',
                                     paymentResponse.errMessage
                                 );
+                                // Thanh toán tiền mặt
                             }
                             else {
-                                console.log(
+                                console.log( // Lỗi khác
+                                    'log from sensorService.js',
                                     paymentResponse.errMessage
                                 );
                             }
@@ -563,7 +565,35 @@ export const manualPlateCorrectionExit = async (correctPlate) => {
     }
 };
 
-
+export const manualPaymentConfirm = async (fee, numberPlate) => {
+    try {
+        const carId = await findCarIdByPlate(numberPlate);
+        if (!carId) {
+            return { errCode: 1, errMessage: "Biển số không tồn tại" };
+        }
+        // const userId = await userService.findUserIdByNumberPlate(numberPlate);
+        // const paymentResponse = await userService.payMoney(userId, fee);
+        // if (paymentResponse.errCode === 0) {
+        //     console.log(paymentResponse.errMessage);
+        //     return { errCode: 0, errMessage: "Thanh toán thành công" };
+        // } else if (paymentResponse.errCode === 2) {
+        //     console.log(paymentResponse.errMessage);
+        //     return { errCode: 2, errMessage: "Không đủ tiền" };
+        // } else {
+        //     console.log(paymentResponse.errMessage);
+        //     return { errCode: 3, errMessage: "Lỗi thanh toán" };
+        // }
+        // update fee vào bảng ParkingLog
+        const parkingLog = await updateCheckOutTimeAndFee(carId, fee);
+        if (!parkingLog) {
+            return { errCode: 2, errMessage: "Không tìm thấy bản ghi gửi xe" };
+        }
+        return { errCode: 0, errMessage: "Thanh toán thành công" };
+    } catch (err) {
+        console.error("[Manual Payment Confirm] ❌", err);
+        return { errCode: 4, errMessage: "Lỗi khi xác nhận thanh toán" };
+    }
+}
 
 const broadcastStatus = (status) => {
     for (const client of wssClients) {

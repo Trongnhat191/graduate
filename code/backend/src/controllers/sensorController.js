@@ -27,9 +27,16 @@ export const handlemanualPlateCorrectionExit = async (req, res) => {
   res.json(result);
 };
 
+export const handleManualPaymentConfirm = async (req, res) => {
+  const { fee, numberPlate } = req.body;
+  const result = await sensorService.manualPaymentConfirm(fee, numberPlate);
+  res.json(result);
+};
+
 export default {
   handleUpdate,
   registerWSS,
   handlemanualPlateCorrectionEntry,
-  handlemanualPlateCorrectionExit
+  handlemanualPlateCorrectionExit,
+  handleManualPaymentConfirm
 };

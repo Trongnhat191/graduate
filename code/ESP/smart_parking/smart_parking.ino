@@ -1,26 +1,32 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-#include <Servo.h>
+#include <ESP32Servo.h>
 
-// WiFi info
 const char* ssid = "TP-Link_825C";
 const char* password = "68449681";
-const char* serverUrl = "http://192.168.0.112:6969/update"; // Địa chỉ server NodeJS
+const char* serverUrl = "http://192.168.0.112:6969/update"; // Đổi theo IP backend
 
-// GPIO cảm biến
+// Cảm biến vị trí đỗ
 int trigSlot1 = 18, echoSlot1 = 5;
 int trigSlot2 = 21, echoSlot2 = 22;
+
+// Cảm biến cổng ra/vào
 int trigEntry = 27, echoEntry = 14;
 int trigExit  = 12, echoExit  = 13;
 
-// GPIO servo
-const int servoEntryPin = 32;
-const int servoExitPin = 33;
+// Servo cổng
+struct ServoControl {
+  Servo servo;
+  int pin;
+  bool isOpen = false;
+  unsigned long openTime = 0;
+};
 
-Servo servoEntry;
-Servo servoExit;
+ServoControl servoEntryCtrl = {Servo(), 25};
+ServoControl servoExitCtrl  = {Servo(), 26};
 
+// Đọc khoảng cách từ cảm biến HC-SR04
 float readDistance(int trig, int echo) {
   digitalWrite(trig, LOW);
   delayMicroseconds(2);
@@ -28,15 +34,26 @@ float readDistance(int trig, int echo) {
   delayMicroseconds(10);
   digitalWrite(trig, LOW);
   long duration = pulseIn(echo, HIGH, 30000); // timeout 30ms
-  return duration > 0 ? (duration * 0.034 / 2) : 999;
+  return duration > 0 ? (duration * 0.034 / 2.0) : 999;
 }
 
-void openServo(Servo& servo, const char* name) {
-  Serial.printf("[SERVO] Mở %s...\n", name);
-  servo.write(90); // góc mở
-  delay(5000);     // giữ mở 5 giây
-  servo.write(0);  // đóng lại
-  Serial.printf("[SERVO] Đóng %s\n", name);
+// Mở servo (non-blocking)
+void openServoNonBlocking(ServoControl &s, const char* name) {
+  if (!s.isOpen) {
+    Serial.printf("[SERVO] Mở %s...\n", name);
+    s.servo.write(90);
+    s.openTime = millis();
+    s.isOpen = true;
+  }
+}
+
+// Tự đóng servo sau 5 giây
+void handleServoTimeout(ServoControl &s, const char* name) {
+  if (s.isOpen && millis() - s.openTime >= 5000) {
+    s.servo.write(0);
+    s.isOpen = false;
+    Serial.printf("[SERVO] Đóng %s\n", name);
+  }
 }
 
 void setup() {
@@ -48,10 +65,11 @@ void setup() {
   pinMode(trigEntry,  OUTPUT); pinMode(echoEntry, INPUT);
   pinMode(trigExit,   OUTPUT); pinMode(echoExit, INPUT);
 
-  servoEntry.attach(servoEntryPin);
-  servoExit.attach(servoExitPin);
-  servoEntry.write(0);
-  servoExit.write(0);
+  // Gắn servo
+  servoEntryCtrl.servo.attach(servoEntryCtrl.pin);
+  servoExitCtrl.servo.attach(servoExitCtrl.pin);
+  servoEntryCtrl.servo.write(0);
+  servoExitCtrl.servo.write(0);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -75,30 +93,33 @@ void loop() {
 
     String payload = "{\"slot1\":" + String(d1) + ",\"slot2\":" + String(d2) +
                      ",\"entry\":" + String(de) + ",\"exit\":" + String(dx) + "}";
-    int httpResponseCode = http.POST(payload);
 
-    if (httpResponseCode > 0) {
+    int httpCode = http.POST(payload);
+
+    if (httpCode == 200) {
       String response = http.getString();
-      Serial.println("[SERVER] Response: " + response);
-
-      StaticJsonDocument<200> doc;
+      StaticJsonDocument<256> doc;
       DeserializationError error = deserializeJson(doc, response);
       if (!error) {
         if (doc["openEntryServo"] == true) {
-          openServo(servoEntry, "ENTRY");
+          openServoNonBlocking(servoEntryCtrl, "ENTRY");
         }
         if (doc["openExitServo"] == true) {
-          openServo(servoExit, "EXIT");
+          openServoNonBlocking(servoExitCtrl, "EXIT");
         }
       } else {
-        Serial.println("[ERROR] Phân tích JSON lỗi!");
+        Serial.println("[ERROR] Không phân tích được JSON phản hồi");
       }
     } else {
-      Serial.printf("[ERROR] Gửi POST thất bại, mã: %d\n", httpResponseCode);
+      Serial.printf("[HTTP] POST thất bại, mã lỗi: %d\n", httpCode);
     }
 
     http.end();
   }
+
+  // Kiểm tra timeout để đóng servo nếu đã mở quá 5 giây
+  handleServoTimeout(servoEntryCtrl, "ENTRY");
+  handleServoTimeout(servoExitCtrl, "EXIT");
 
   delay(1000);
 }

@@ -52,6 +52,8 @@ let initWebRoutes = (app) => {
   router.post("/api/momo/recharge", rechargeBalance);
   router.post("/api/momo/callback-recharge", callbackRechargeBalance);
 
+  // Manual payment confirm
+  router.post("/api/manual-payment-confirm", sensorController.handleManualPaymentConfirm);
   return app.use("/", router);
 };
 
