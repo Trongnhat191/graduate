@@ -5,13 +5,13 @@ import db from '../models/index.js';
 
 // Momo payment 
 export const createMomoPaymentService = async (amount, userId, month) => {
-    // console.log("check data from paymentservice", amount);
+    console.log("check data from paymentservice", amount);
   const accessKey = process.env.ACCESSKEY;
   const secretKey = process.env.SECRETKEY;
   const orderInfo = 'pay with MoMo';
   const partnerCode = 'MOMO';
   const redirectUrl = 'http://localhost:3000/home';
-  const ipnUrl = 'https://1fd8-171-241-38-166.ngrok-free.app/api/momo/callback';
+  const ipnUrl = 'https://6eb4-2401-d800-b6-2d53-2fa3-bc33-5e6a-520.ngrok-free.app/api/momo/callback';
   const requestType = "payWithMethod";
   const orderId = partnerCode + new Date().getTime();
   const requestId = orderId;
@@ -66,6 +66,7 @@ export const updateMonthTicket = async (userId, month) => {
         await ticket.save();
     } else {
         // Tạo vé tháng mới
+        console.log("Creating new month ticket for car:", car.id);
         const startDate = now;
         const endDate = new Date(now);
         endDate.setMonth(endDate.getMonth() + Number(month));
@@ -84,6 +85,7 @@ export const callbackMomoPaymentService = async (callbackData) => {
 
     const resultCode = callbackData.resultCode;
     if (resultCode === 0){
+      console.log("Payment successful, updating month ticket...");
         const extraData = JSON.parse(Buffer.from(callbackData.extraData, 'base64').toString('utf-8'));
         const userId = extraData.userId;
         const month = extraData.month;
@@ -104,7 +106,7 @@ export const rechargeBalanceService = async (amount, userId) => {
   const orderInfo = 'pay with MoMo';
   const partnerCode = 'MOMO';
   const redirectUrl = 'http://localhost:3000/home';
-  const ipnUrl = 'https://1fd8-171-241-38-166.ngrok-free.app/api/momo/callback-recharge';
+  const ipnUrl = 'https://6eb4-2401-d800-b6-2d53-2fa3-bc33-5e6a-520.ngrok-free.app/api/momo/callback-recharge';
   const requestType = "payWithMethod";
   const orderId = partnerCode + new Date().getTime();
   const requestId = orderId;

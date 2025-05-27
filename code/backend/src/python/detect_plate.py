@@ -15,7 +15,7 @@ folder = sys.argv[2]
 
 ### Load OCR model ###
 # start = time.time()
-ocr = PaddleOCR(lang='vi', show_log = False, use_angle_cls=True)
+ocr = PaddleOCR(lang='vi', show_log = False)
 # print(f"✅ Load PaddleOCR: {time.time() - start:.2f}s")
 
 ### Load YOLO model ###
@@ -54,8 +54,13 @@ boxes = results[0].boxes
 x1, y1, x2, y2 = map(int, boxes.xyxy[0])
 cut_img = frame[y1:y2, x1:x2]
 res = ocr.ocr(cut_img)
-text = res[0][0][1][0] if res and res[0] else "Không đọc được"
-text = result = re.sub(r'[^A-Za-z0-9]', '', text)
+text = ""
+for line in res:
+    for word in line:
+        if word[1][1] > 0.5:  # Confidence threshold
+            text+= word[1][0]
+# text = res[0][0][1][0] if res and res[0] else "Không đọc được"
+text = re.sub(r'[^A-Za-z0-9]', '', text)
 # print(f"🔡 PaddleOCR: {time.time() - start:.2f}s")
 # print(f"📃 Kết quả: {text}")
 print(text)

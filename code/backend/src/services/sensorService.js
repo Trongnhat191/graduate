@@ -182,7 +182,7 @@ let updateEndDate = async (carId) => {
                 // Tính số ngày gửi xe (chỉ sử dụng ngày)
                 const startDate = new Date(ticket.startDate).getDate();
                 const endDate = new Date(ticket.endDate).getDate();
-                const timeDiff = startDate - endDate + 1;
+                const timeDiff = endDate - startDate + 1;
                 // console.log("timeDiff: ", timeDiff);
                 resolve(timeDiff);
             } else {
@@ -255,7 +255,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
         entryHandle = true;
         response.openEntryServo = true;
         exec(
-            "conda run -n graduate python src/python/detect_plate.py 0 src/public/photos/entry",
+            "conda run -n graduate python src/python/detect_plate.py 2 src/public/photos/entry",
             async (err, stdout, stderr) => {
                 if (err) {
                     console.log("---------------------");
@@ -353,7 +353,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
         exitHandle = true;
         response.openExitServo = true;
         exec(
-            "conda run -n graduate python src/python/detect_plate.py 0 src/public/photos/exit",
+            "conda run -n graduate python src/python/detect_plate.py 2 src/public/photos/exit",
             async (err, stdout, stderr) => {
                 if (err) {
                     console.log("---------------------");
@@ -391,7 +391,10 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
                             currentStatus.ticketTypeOut = "month";
                         } else {  // Nếu là vé ngày
                             const timeDiff = await updateEndDate(carId);
+                            
                             const fee = 10000 * timeDiff;
+                            console.log("timeDiff: ", timeDiff);
+                            console.log("fee", fee);
                             currentStatus.fee = fee;
                             await updateCheckOutTimeAndFee(carId, fee);
                             const userId = await userService.findUserIdByNumberPlate(plate);
