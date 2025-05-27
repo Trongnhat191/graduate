@@ -9,7 +9,7 @@ const char* serverUrl = "http://192.168.0.112:6969/update"; // Đổi theo IP ba
 
 // Cảm biến vị trí đỗ
 int trigSlot1 = 18, echoSlot1 = 5;
-int trigSlot2 = 21, echoSlot2 = 22;
+int trigSlot2 = 19, echoSlot2 = 23;
 
 // Cảm biến cổng ra/vào
 int trigEntry = 27, echoEntry = 14;
