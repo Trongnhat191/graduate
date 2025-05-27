@@ -433,8 +433,8 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
 
     // Xử lý cập nhật trạng thái chỗ đỗ
     const newStatus = {
-        slot1: slot1 < 50 ? "occupied" : "empty",
-        slot2: slot2 < 50 ? "occupied" : "empty",
+        slot1: slot1 < 10 ? "occupied" : "empty",
+        slot2: slot2 < 10 ? "occupied" : "empty",
     };
 
     const isChanged =
