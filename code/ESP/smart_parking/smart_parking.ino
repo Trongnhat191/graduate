@@ -3,9 +3,9 @@
 #include <ArduinoJson.h>
 #include <ESP32Servo.h>
 
-const char* ssid = "Trongnhat";
-const char* password = "11111111";
-const char* serverUrl = "http://172.20.10.6:6969/update"; // Đổi theo IP backend
+const char* ssid = "TP-Link_825C";
+const char* password = "68449681";
+const char* serverUrl = "http://192.168.0.112:6969/update"; // Đổi theo IP backend
 
 // Cảm biến vị trí đỗ
 int trigSlot1 = 18, echoSlot1 = 5;
