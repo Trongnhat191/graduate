@@ -20,6 +20,8 @@ bool wsConnected = false;
 // Cảm biến vị trí đỗ
 int trigSlot1 = 18, echoSlot1 = 5;
 int trigSlot2 = 19, echoSlot2 = 23;
+int trigSlot3 = 4 , echoSlot3 = 32;
+int trigSlot4 = 2 , echoSlot4 = 33;
 
 // Cảm biến cổng ra/vào
 int trigEntry = 27, echoEntry = 14;
@@ -121,6 +123,8 @@ void setup() {
 
   pinMode(trigSlot1, OUTPUT); pinMode(echoSlot1, INPUT);
   pinMode(trigSlot2, OUTPUT); pinMode(echoSlot2, INPUT);
+  pinMode(trigSlot3, OUTPUT); pinMode(echoSlot3, INPUT);
+  pinMode(trigSlot4, OUTPUT); pinMode(echoSlot4, INPUT);
   pinMode(trigEntry,  OUTPUT); pinMode(echoEntry, INPUT);
   pinMode(trigExit,   OUTPUT); pinMode(echoExit, INPUT);
 
@@ -155,12 +159,17 @@ void loop() {
 
     float d1 = readDistance(trigSlot1, echoSlot1);
     float d2 = readDistance(trigSlot2, echoSlot2);
+    float d3 = readDistance(trigSlot3, echoSlot3);
+    float d4 = readDistance(trigSlot4, echoSlot4);
     float de = readDistance(trigEntry,  echoEntry);
     float dx = readDistance(trigExit,   echoExit);
+
 
     StaticJsonDocument<200> doc;
     doc["slot1"] = d1;
     doc["slot2"] = d2;
+    doc["slot3"] = d3;
+    doc["slot4"] = d4;
     doc["entry"] = de;
     doc["exit"]  = dx;
 

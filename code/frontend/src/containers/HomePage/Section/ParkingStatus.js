@@ -6,6 +6,8 @@ function ParkingStatus() {
   const [status, setStatus] = useState({
     slot1: 'empty',
     slot2: 'empty',
+    slot3: 'empty',
+    slot4: 'empty',
   });
 
   useEffect(() => {
@@ -38,8 +40,10 @@ function ParkingStatus() {
     <div className="parking-area">
       {/* <h2>Trạng thái bãi đỗ xe</h2> */}
       {/* <div className="slots"> */}
-        {renderSlot(1, status.slot1)}
+        {renderSlot(4, status.slot4)}
+        {renderSlot(3, status.slot3)}
         {renderSlot(2, status.slot2)}
+        {renderSlot(1, status.slot1)}
       {/* </div> */}
     </div>
   );

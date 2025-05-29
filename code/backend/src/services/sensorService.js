@@ -7,6 +7,8 @@ import userService from "./userService.js";
 let currentStatus = {
     slot1: "empty",
     slot2: "empty",
+    slot3: "empty",
+    slot4: "empty",
 
     currentNumberPlateIn: "",
     imageIn: "",
@@ -261,7 +263,7 @@ let deleteTicketByCarId = async (carId) => {
     });
 };
 
-export const processSensorData = async ({ entry, exit, slot1, slot2 }, ws) => {
+export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot4 }, ws) => {
     const response = {
         openEntryServo: false,
         openExitServo: false,
@@ -490,11 +492,15 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }, ws) => {
     const newStatus = {
         slot1: slot1 < 10 ? "occupied" : "empty",
         slot2: slot2 < 10 ? "occupied" : "empty",
+        slot3: slot3 < 10 ? "occupied" : "empty",
+        slot4: slot4 < 10 ? "occupied" : "empty",
     };
 
     const isChanged =
         newStatus.slot1 !== currentStatus.slot1 ||
-        newStatus.slot2 !== currentStatus.slot2;
+        newStatus.slot2 !== currentStatus.slot2 ||
+        newStatus.slot3 !== currentStatus.slot3 ||
+        newStatus.slot4 !== currentStatus.slot4;
 
     if (isChanged) {
         currentStatus = newStatus;
