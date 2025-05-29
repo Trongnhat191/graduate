@@ -133,10 +133,13 @@ class StaffManage extends Component {
                 // Optionally, clear the fee or update UI as needed
                 this.setState({
                     fee: "", // Clear fee after successful payment
-                    // currentNumberPlateOut: "", // Optionally clear number plate
-                    // imageOut: "", // Optionally clear image
-                    // ticketTypeOut: "" // Optionally clear ticket type
+                    currentNumberPlateOut: "", // Optionally clear number plate
+                    imageOut: "", // Optionally clear image
+                    ticketTypeOut: "" // Optionally clear ticket type
+
+
                 });
+
             } else {
                 alert(response?.errMessage || "Thanh toán thất bại!");
             }

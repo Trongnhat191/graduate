@@ -643,6 +643,7 @@ export const manualPaymentConfirm = async (fee, numberPlate) => {
         if (!parkingLog) {
             return { errCode: 2, errMessage: "Không tìm thấy bản ghi gửi xe" };
         }
+        broadcastStatus({openExitServo: true, plate: numberPlate});
         return { errCode: 0, errMessage: "Thanh toán thành công" };
     } catch (err) {
         console.error("[Manual Payment Confirm] ❌", err);
