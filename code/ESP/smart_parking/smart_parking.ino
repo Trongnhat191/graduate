@@ -1,11 +1,16 @@
 #include <WiFi.h>
-#include <HTTPClient.h>
+#include <WebSocketsClient.h>
 #include <ArduinoJson.h>
 #include <ESP32Servo.h>
 
 const char* ssid = "TP-Link_825C";
 const char* password = "68449681";
-const char* serverUrl = "http://192.168.0.112:6969/update"; // Đổi theo IP backend
+const char* ws_host = "192.168.0.112"; // Địa chỉ backend
+const uint16_t ws_port = 6969;
+const char* ws_path = "/";
+
+WebSocketsClient webSocket;
+bool wsConnected = false;
 
 // Cảm biến vị trí đỗ
 int trigSlot1 = 18, echoSlot1 = 5;
@@ -56,6 +61,30 @@ void handleServoTimeout(ServoControl &s, const char* name) {
   }
 }
 
+void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
+  switch(type) {
+    case WStype_DISCONNECTED:
+      Serial.println("[WS] Ngắt kết nối!");
+      wsConnected = false;
+      break;
+    case WStype_CONNECTED:
+      Serial.println("[WS] Đã kết nối!");
+      wsConnected = true;
+      break;
+    case WStype_TEXT:{
+      Serial.printf("[WS] Nhận: %s\n", payload);
+      StaticJsonDocument<256> doc;
+      DeserializationError error = deserializeJson(doc, payload, length);
+      if (!error) {
+        if (doc["openEntryServo"] == true) openServoNonBlocking(servoEntryCtrl, "ENTRY");
+        if (doc["openExitServo"] == true) openServoNonBlocking(servoExitCtrl, "EXIT");
+      }
+      break;}
+    default:
+      break;
+  }
+}
+
 void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, password);
@@ -76,50 +105,40 @@ void setup() {
     Serial.print(".");
   }
   Serial.println("\nWiFi connected");
+
+  webSocket.begin(ws_host, ws_port, ws_path);
+  webSocket.onEvent(webSocketEvent);
+  webSocket.setReconnectInterval(5000);
 }
 
 void loop() {
-  float d1 = readDistance(trigSlot1, echoSlot1);
-  float d2 = readDistance(trigSlot2, echoSlot2);
-  float de = readDistance(trigEntry,  echoEntry);
-  float dx = readDistance(trigExit,   echoExit);
+  webSocket.loop();
 
-  Serial.printf("slot1: %.2f cm, slot2: %.2f cm, entry: %.2f cm, exit: %.2f cm\n", d1, d2, de, dx);
+  static unsigned long lastSend = 0;
+  if (millis() - lastSend > 1000 && wsConnected) {
+    lastSend = millis();
 
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
-    http.begin(serverUrl);
-    http.addHeader("Content-Type", "application/json");
+    float d1 = readDistance(trigSlot1, echoSlot1);
+    float d2 = readDistance(trigSlot2, echoSlot2);
+    float de = readDistance(trigEntry,  echoEntry);
+    float dx = readDistance(trigExit,   echoExit);
 
-    String payload = "{\"slot1\":" + String(d1) + ",\"slot2\":" + String(d2) +
-                     ",\"entry\":" + String(de) + ",\"exit\":" + String(dx) + "}";
+    StaticJsonDocument<200> doc;
+    doc["slot1"] = d1;
+    doc["slot2"] = d2;
+    doc["entry"] = de;
+    doc["exit"]  = dx;
 
-    int httpCode = http.POST(payload);
+    String payload;
+    serializeJson(doc, payload);
+    webSocket.sendTXT(payload);
 
-    if (httpCode == 200) {
-      String response = http.getString();
-      StaticJsonDocument<256> doc;
-      DeserializationError error = deserializeJson(doc, response);
-      if (!error) {
-        if (doc["openEntryServo"] == true) {
-          openServoNonBlocking(servoEntryCtrl, "ENTRY");
-        }
-        if (doc["openExitServo"] == true) {
-          openServoNonBlocking(servoExitCtrl, "EXIT");
-        }
-      } else {
-        Serial.println("[ERROR] Không phân tích được JSON phản hồi");
-      }
-    } else {
-      Serial.printf("[HTTP] POST thất bại, mã lỗi: %d\n", httpCode);
-    }
-
-    http.end();
+    Serial.print("[WS] Gửi: ");
+    Serial.println(payload);
   }
 
-  // Kiểm tra timeout để đóng servo nếu đã mở quá 5 giây
   handleServoTimeout(servoEntryCtrl, "ENTRY");
   handleServoTimeout(servoExitCtrl, "EXIT");
 
-  delay(1000);
+  delay(10);
 }
