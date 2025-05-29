@@ -8,12 +8,12 @@ export const registerWSS = (wss) => {
 
     ws.on('message', async (message) => {
       try {
-        // Parse message, có thể là dữ liệu cảm biến hoặc lệnh khác
         const msg = message.toString();
         // console.log("Received message from client:", msg);
         let data;
         try {
           data = JSON.parse(msg);
+          await sensorService.processSensorData(data, ws); // Gọi hàm xử lý dữ liệu cảm biến
         } catch (err) {
           console.error("Invalid JSON from client:", msg);
           return;

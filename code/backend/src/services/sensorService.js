@@ -244,7 +244,7 @@ let deleteTicketByCarId = async (carId) => {
     });
 };
 
-export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
+export const processSensorData = async ({ entry, exit, slot1, slot2 }, ws) => {
     const response = {
         openEntryServo: false,
         openExitServo: false,
@@ -253,7 +253,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
     // console.log("Xử lý entry");
     if (entry < 10 && !entryHandle) {
         entryHandle = true;
-        response.openEntryServo = true;
+        // response.openEntryServo = true;
         exec(
             "conda run -n graduate python src/python/detect_plate.py 2 src/public/photos/entry",
             async (err, stdout, stderr) => {
@@ -271,8 +271,13 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
                     const lastLine = lines[lines.length - 1];
                     const plate = lastLine.trim();
                     const imageName = lines[0].trim();
-                    // console.log("imageName: ", imageName);
-                    // console.log("Biển số nhận diện: ", plate);
+
+                    // Gửi lệnh mở servo 
+                    if (plate !== "error" && ws && ws.readyState === 1) {
+                        ws.send(JSON.stringify({ openEntryServo: true }));
+                    }
+
+                    // 
                     currentStatus.currentNumberPlateIn = plate;
                     currentStatus.imageIn = imageName;
                     // console.log("currentStatus: ", currentStatus);
@@ -369,6 +374,11 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }) => {
                     const lastLine = lines[lines.length - 1];
                     const plate = lastLine.trim();
                     const imageName = lines[0].trim();
+
+                    // Gửi lệnh mở servo
+                    if (plate !== "error" && ws && ws.readyState === 1) {
+                        ws.send(JSON.stringify({ openExitServo: true }));
+                    }
 
                     currentStatus.currentNumberPlateOut = plate;
                     currentStatus.imageOut = imageName;
