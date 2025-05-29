@@ -55,7 +55,7 @@ class UserManage extends Component {
 
     createNewUser = async (data) => {
         try {
-            console.log("check data from ModelEditUser", data);
+            console.log("check data from ModelEditUser", data.cars.numberPlate);
             let rensponse = await createNewUserService(data);
             if (rensponse && rensponse.errCode !== 0) {
                 alert(rensponse.message);

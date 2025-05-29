@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createMomoPayment, getTicketInfoByNumberPlate } from '../../../services/paymentService';
+import { createMomoPayment, getTicketInfoByNumberPlate, getMonthTicketInfoByNumberPlate } from '../../../services/paymentService';
 import './BuyMonthTicket.scss';
 class BuyMonthTicket extends Component {
 
@@ -60,10 +60,11 @@ class BuyMonthTicket extends Component {
     }
 
     handleGetTicketInfo = async (numberPlate) => {
-        let res = await getTicketInfoByNumberPlate(numberPlate);
+        let res = await getMonthTicketInfoByNumberPlate(numberPlate);
+        console.log("check res from getMonthTicketInfoByNumberPlate", res);
         if (res && res.errCode === 0) {
             this.setState({
-                endDate: res.ticketInfo.endDate,
+                endDate: res.monthTicketInfo.endDate,
             })
         } else {
             this.setState({

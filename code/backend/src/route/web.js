@@ -43,7 +43,7 @@ let initWebRoutes = (app) => {
   router.post("/manual-plate-correction-exit", sensorController.handlemanualPlateCorrectionExit);
   router.post("/api/create-new-car", carController.handleCreateNewCar);
   router.get("/api/get-ticket-info-by-number-plate", carController.handleGetTicketInfoByNumberPlate);
-
+  router.get("/api/get-month-ticket-info-by-number-plate", carController.handleGetMonthTicketInfoByNumberPlate);
   // Momo payment month ticket
   router.post("/api/momo/payment", createMomoPayment);
   router.post("/api/momo/callback", callbackMomoPayment);

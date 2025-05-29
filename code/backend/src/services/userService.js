@@ -146,8 +146,26 @@ let hashUserPassword = (password) => {
   });
 };
 
+let checkCarExist = (numberPlate) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let car = await db.Car.findOne({
+        where: { numberPlate: numberPlate },
+        raw: false
+      });
+      if (car) {
+        resolve(car);
+      } else {
+        resolve(false);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 let createNewUser = (data) => {
-    console.log("check data from service", data);
+  // console.log("check data from service", data.cars.numberPlate);
   return new Promise(async (resolve, reject) => {
     try {
       let check = await checkUserAccount(data.account);
@@ -168,17 +186,28 @@ let createNewUser = (data) => {
           phoneNumber: data.phoneNumber,
           gender: data.gender
         });
-        await db.Car.create({
-          numberPlate: data.cars.numberPlate,
-          userId: newUser.id,
-        });
-        resolve({
-          errCode: 0,
-          errMessage: "OK",
-        });
+        let checkCar = await checkCarExist(data.cars.numberPlate);
+        if (!checkCar) {
+          await db.Car.create({
+            numberPlate: data.cars.numberPlate,
+            userId: newUser.id,
+          });
+          resolve({
+            errCode: 0,
+            errMessage: "OK",
+          });
+        }
+        else {
+          checkCar.userId = newUser.id;
+          await checkCar.save();
+          resolve({
+            errCode: 0,
+            errMessage: "OK,car already exists, just update userId"
+          });
+        }
       }
     } catch (e) {
-        console.log('check error', e);
+      console.log('check error', e);
       reject(e);
     }
   });
@@ -250,7 +279,8 @@ let editUser = (data) => {
   });
 };
 
-let payMoney = (userId, fee) => {  return new Promise(async (resolve, reject) => {
+let payMoney = (userId, fee) => {
+  return new Promise(async (resolve, reject) => {
     try {
       let user = await db.User.findOne({
         where: { id: userId },
@@ -283,8 +313,8 @@ let payMoney = (userId, fee) => {  return new Promise(async (resolve, reject) =>
   });
 }
 
-let findUserIdByNumberPlate = (numberPlate) =>{
-  return new Promise(async(resolve, reject) => {
+let findUserIdByNumberPlate = (numberPlate) => {
+  return new Promise(async (resolve, reject) => {
     try {
       let user = await db.Car.findOne({
         where: { numberPlate: numberPlate },
@@ -295,7 +325,7 @@ let findUserIdByNumberPlate = (numberPlate) =>{
       } else {
         resolve(false);
       }
-    } 
+    }
     catch (e) {
       reject(e);
     }

@@ -17,6 +17,8 @@ class StaffManage extends Component {
 			imageOut: "",
 			ticketTypeOut: "",
 			fee: "",
+
+			cash: false, // Biến này có thể dùng để xác định có sử dụng tiền mặt hay không
 		};
 	}
 
@@ -45,6 +47,7 @@ class StaffManage extends Component {
 					imageOut: data.imageOut,
 					ticketTypeOut: data.ticketTypeOut,
 					fee: data.fee,
+					cash: data.cash
 				});
 			}
 		};
@@ -258,7 +261,7 @@ class StaffManage extends Component {
 											{this.state.fee ? this.state.fee + " VNĐ" : "Chưa có dữ liệu"}
 										</div>
 										<button className="right-info-button" onClick={() => {
-											this.handleManualPaymentConfirm();}}>
+											this.handleManualPaymentConfirm();}} disabled={!this.state.cash}>
 											Thanh toán
 										</button>
 									</div>

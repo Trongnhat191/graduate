@@ -21,6 +21,43 @@ let createNewCar = (data) => {
     });
 }
 
+let getMonthTicketInfoByNumberPlate = (numberPlate) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let carId = await db.Car.findOne({
+                where: { numberPlate: numberPlate },
+                raw: false
+            })
+            if (!carId) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Car not found',
+                    // ticketInfo: {}
+                });
+            }
+            let ticketInfo = await db.Ticket.findOne({
+                where: { carId: carId.id, ticketType: 'month' },
+                raw: false
+            })
+            if (!ticketInfo) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Ticket not found',
+                    // ticketInfo: {}
+                });
+            }
+            resolve({
+                errCode: 0,
+                errMessage: 'OK',
+                ticketInfo: ticketInfo
+            });
+        } catch (e) {
+            console.log('error: ', e);
+            reject(e);
+        }
+    })
+}
+
 let getTicketInfoByNumberPlate = (numberPlate) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -61,5 +98,6 @@ let getTicketInfoByNumberPlate = (numberPlate) => {
 
 export default {
     createNewCar: createNewCar,
-    getTicketInfoByNumberPlate: getTicketInfoByNumberPlate
+    getTicketInfoByNumberPlate: getTicketInfoByNumberPlate,
+    getMonthTicketInfoByNumberPlate: getMonthTicketInfoByNumberPlate
 }

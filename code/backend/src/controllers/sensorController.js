@@ -63,6 +63,7 @@ export const handlemanualPlateCorrectionExit = async (req, res) => {
 
 export const handleManualPaymentConfirm = async (req, res) => {
   const { fee, numberPlate } = req.body;
+  // console.log("check data from handleManual", fee, numberPlate);
   const result = await sensorService.manualPaymentConfirm(fee, numberPlate);
   res.json(result);
 };

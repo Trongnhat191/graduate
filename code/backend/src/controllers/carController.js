@@ -27,8 +27,25 @@ let handleGetTicketInfoByNumberPlate = async (req, res) => {
     });
 }
 
+let handleGetMonthTicketInfoByNumberPlate = async (req, res) => {
+    let numberPlate = req.query.numberPlate;
+    if (!numberPlate) {
+        return res.status(200).json({
+            errCode: 1,
+            errMessage: 'Missing required parameters'
+        });
+    }
+    let message = await carService.getMonthTicketInfoByNumberPlate(numberPlate);
+    return res.status(200).json({
+        errCode: message.errCode,
+        errMessage: message.errMessage,
+        monthTicketInfo: message.ticketInfo ? message.ticketInfo : {}
+    });
+}
+
 export default {
     handleCreateNewCar: handleCreateNewCar,
-    handleGetTicketInfoByNumberPlate: handleGetTicketInfoByNumberPlate
+    handleGetTicketInfoByNumberPlate: handleGetTicketInfoByNumberPlate,
+    handleGetMonthTicketInfoByNumberPlate: handleGetMonthTicketInfoByNumberPlate
 
 }

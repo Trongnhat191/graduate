@@ -13,6 +13,14 @@ const getTicketInfoByNumberPlate = (numberPlate) => {
     })
 }
 
+const getMonthTicketInfoByNumberPlate = (numberPlate) => {
+    return axios.get('/api/get-month-ticket-info-by-number-plate', {
+        params: {
+            numberPlate: numberPlate
+        }
+    })
+}
+
 const rechargeBalance = (data) => {
     return axios.post('/api/momo/recharge', data)
 }
@@ -20,6 +28,7 @@ const rechargeBalance = (data) => {
 export {
     createMomoPayment,
     getTicketInfoByNumberPlate,
-    rechargeBalance
+    rechargeBalance,
+    getMonthTicketInfoByNumberPlate
 
 }

@@ -2,10 +2,15 @@
 #include <WebSocketsClient.h>
 #include <ArduinoJson.h>
 #include <ESP32Servo.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Địa chỉ I2C thường là 0x27 hoặc 0x3F
+String lastPlate = "";
+String ticketTypeIn = "";
 
 const char* ssid = "TP-Link_825C";
 const char* password = "68449681";
-const char* ws_host = "192.168.0.112"; // Địa chỉ backend
+const char* ws_host = "192.168.0.112";
 const uint16_t ws_port = 6969;
 const char* ws_path = "/";
 
@@ -76,7 +81,32 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       StaticJsonDocument<256> doc;
       DeserializationError error = deserializeJson(doc, payload, length);
       if (!error) {
-        if (doc["openEntryServo"] == true) openServoNonBlocking(servoEntryCtrl, "ENTRY");
+        if (doc["openEntryServo"] == true) {
+          openServoNonBlocking(servoEntryCtrl, "ENTRY");
+          if (doc.containsKey("plate")) {
+            lastPlate = doc["plate"].as<String>();
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("Plate: ");
+            lcd.print(lastPlate);
+          }
+        }
+        else  if (doc["openEntryServo"] == false) {
+          if (doc.containsKey("plate")) {
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("Plate: ");
+            lcd.print(doc["plate"].as<String>());
+          }
+        }
+        if (doc["ticketTypeIn"] == "month" || doc["ticketTypeIn"] == "day") {
+          lcd.setCursor(0, 1);
+          lcd.print("Ticket: ");
+
+          ticketTypeIn = doc["ticketTypeIn"].as<String>();
+          lcd.print(ticketTypeIn);
+          
+        }
         if (doc["openExitServo"] == true) openServoNonBlocking(servoExitCtrl, "EXIT");
       }
       break;}
@@ -99,6 +129,11 @@ void setup() {
   servoExitCtrl.servo.attach(servoExitCtrl.pin);
   servoEntryCtrl.servo.write(0);
   servoExitCtrl.servo.write(0);
+
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("Smart Parking!");
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);

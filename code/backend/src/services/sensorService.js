@@ -16,6 +16,8 @@ let currentStatus = {
     imageOut: "",
     ticketTypeOut: "",
     fee: 0,
+
+    cash: false,
 };
 
 let entryHandle = false;
@@ -36,14 +38,28 @@ let checkPlateExisted = async (plate) => {
     return new Promise(async (resolve, reject) => {
         try {
             let car = await db.Car.findOne({
-                where: { numberPlate: plate },
+                where: {
+                    numberPlate: plate
+                },
             });
             if (car) {
-                resolve({
-                    carId: car.id,
-                    errCode: 1,
-                    errMessage: "Biển số đã tồn tại",
-                });
+                if (car.userId === null) {
+                    // Biển số đã tồn tại nhưng chưa có người dùng
+                    return resolve({
+                        carId: car.id,
+                        errCode: 2,
+                        errMessage: "Biển số đã tồn tại nhưng chưa có người dùng",
+                    });
+                }
+                // Biển số đã tồn tại và có người dùng
+                else {
+                    return resolve({
+                        carId: car.id,
+                        errCode: 1,
+                        errMessage: "Biển số đã tồn tại",
+                    });
+                }
+
             } else {
                 resolve({
                     errCode: 0,
@@ -76,24 +92,25 @@ let createParkingLogs = async (carId) => {
     });
 };
 
-let checkTicketExisted = async (carId) => {
+let checkMonthTicketExisted = async (carId) => {
     return new Promise(async (resolve, reject) => {
         try {
             let ticket = await db.Ticket.findOne({
                 where: {
                     carId: carId,
+                    ticketType: "month",
                 },
             });
             if (ticket) {
                 resolve({
                     endDate: ticket.endDate,
                     errCode: 1,
-                    errMessage: "Vé đã tồn tại",
+                    errMessage: "Vé tháng đã tồn tại",
                 });
             } else {
                 resolve({
                     errCode: 0,
-                    errMessage: "Vé chưa tồn tại",
+                    errMessage: "Vé tháng chưa tồn tại",
                 });
             }
         } catch (e) {
@@ -266,6 +283,11 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }, ws) => {
                     currentStatus.imageIn = stdout.trim().split("\n")[0];
                     currentStatus.ticketTypeIn = "";
                     broadcastStatus(currentStatus);
+                    // const plate = "error";
+                    // Gửi lệnh mở servo
+                    if (ws && ws.readyState === 1) {
+                        ws.send(JSON.stringify({ openEntryServo: false, plate: "error" }));
+                    }
                 } else {
                     const lines = stdout.trim().split("\n");
                     const lastLine = lines[lines.length - 1];
@@ -274,45 +296,41 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }, ws) => {
 
                     // Gửi lệnh mở servo 
                     if (plate !== "error" && ws && ws.readyState === 1) {
-                        ws.send(JSON.stringify({ openEntryServo: true }));
+                        ws.send(JSON.stringify({ openEntryServo: true, "plate": plate }));
                     }
 
-                    // 
                     currentStatus.currentNumberPlateIn = plate;
                     currentStatus.imageIn = imageName;
                     // console.log("currentStatus: ", currentStatus);
                     broadcastStatus(currentStatus);
                     try {
                         const checkResponse = await checkPlateExisted(plate);
-                        // console.log('CheckRes: ', checkResponse)
-                        // await createParkingLogs(checkResponse.carId);
-                        // console.log("createParkingLogs Done: ", checkResponse.carId)
 
                         if (checkResponse.errCode === 1) {
                             // Biển số đã tồn tại
                             await createParkingLogs(checkResponse.carId);
                             // Kiểm tra xem carId có trong bảng Tickets không
-                            console.log(`[Entry Car] ✅ Biển số đã tồn tại: ${plate}`);
-                            const ticketExisted = await checkTicketExisted(
+                            // console.log(`[Entry Car] ✅ Biển số đã tồn tại: ${plate}`);
+                            const monthTicketExisted = await checkMonthTicketExisted(
                                 checkResponse.carId
                             );
-                            if (ticketExisted.errCode === 1) {
+                            if (monthTicketExisted.errCode === 1) {
                                 // Vé đã tồn tại
                                 const currentDate = new Date();
-                                const endDate = new Date(ticketExisted.endDate);
+                                const endDate = new Date(monthTicketExisted.endDate);
                                 if (currentDate > endDate) {
-                                    console.log(`[Create Car] ❌ Vé đã hết hạn`);
-                                    await deleteTicketByCarId(checkResponse.carId);
-                                    console.log(
-                                        `[Create Car] ✅ Đã xóa vé tháng cũ cho biển số ${plate}`
-                                    );
+                                    console.log(`[Create Car] ❌ Vé tháng đã hết hạn`);
+                                    // await deleteTicketByCarId(checkResponse.carId);
+                                    // console.log(
+                                    //     `[Create Car] ✅ Đã xóa vé tháng cũ cho biển số ${plate}`
+                                    // );
                                     const ticket = await createNewTicket(checkResponse.carId);
                                     console.log(
-                                        `[Create Car] ✅ Đã tạo vé ngày mới cho biển số ${plate}`
+                                        `[Create Car] ✅ vì vé tháng hết hạn, Đã tạo vé ngày mới cho biển số ${plate}`
                                     );
                                     currentStatus.ticketTypeIn = "day";
                                 } else {
-                                    console.log(`[Create Car] ✅ Vé còn hiệu lực, cho xe vào`);
+                                    console.log(`[Create Car] ✅ Vé tháng còn hiệu lực, cho xe vào`);
                                     currentStatus.ticketTypeIn = "month";
                                 }
                             } else {
@@ -324,22 +342,26 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }, ws) => {
                                     `[Create Car] ✅ Đã tạo vé ngày cho biển số ${plate}`
                                 );
                             }
-                        } else {
-                            // Biển số chưa tồn tại
-                            console.log(`[Create Car] ❌ Biển số chưa tồn tại: ${plate}`);
-                            const checkResponse = await axios.post(
+                        } else if (checkResponse.errCode === 0) {
+                            // Biển số chưa tồn tại và chưa có người dùng
+                            console.log(`[Create Car] ❌ Biển số chưa tồn tại và ko có user: ${plate}`);
+                            const checkResponse1 = await axios.post(
                                 "http://localhost:6969/api/create-new-car",
                                 {
-                                    numberPlate: plate,
+                                    numberPlate: plate
                                 }
                             );
-                            // console.log('CheckRes: ', checkResponse)
-                            const carId = checkResponse.data.carId;
-                            // console.log(`[Create Car] ✅ Đã tạo xe mới với biển số ${carId}`);
+                            const carId = checkResponse1.data.carId;
                             await createParkingLogs(carId);
                             await createNewTicket(carId);
                             currentStatus.ticketTypeIn = "day";
-                            // console.log(`[Create Car] ✅ Đã lưu biển số ${plate}`);
+                        }
+                        else { // Biển số tồn tại nhưng chưa có người dùng
+                            console.log(`[Create Car] ❌ Biển số đã tồn tại nhưng chưa có người dùng: ${plate}`);
+                            const carId = await findCarIdByPlate(plate);
+                            await createParkingLogs(carId);
+                            await createNewTicket(carId);
+                            currentStatus.ticketTypeIn = "day";
                         }
                         broadcastStatus(currentStatus);
                     } catch (apiErr) {
@@ -375,10 +397,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }, ws) => {
                     const plate = lastLine.trim();
                     const imageName = lines[0].trim();
 
-                    // Gửi lệnh mở servo
-                    if (plate !== "error" && ws && ws.readyState === 1) {
-                        ws.send(JSON.stringify({ openExitServo: true }));
-                    }
+
 
                     currentStatus.currentNumberPlateOut = plate;
                     currentStatus.imageOut = imageName;
@@ -399,37 +418,60 @@ export const processSensorData = async ({ entry, exit, slot1, slot2 }, ws) => {
                             );
                             await updateCheckOutTimeAndFee(carId, 0);
                             currentStatus.ticketTypeOut = "month";
+                            // Gửi lệnh mở servo
+                            if (plate !== "error" && ws && ws.readyState === 1) {
+                                ws.send(JSON.stringify({ openExitServo: true }));
+                            }
                         } else {  // Nếu là vé ngày
                             const timeDiff = await updateEndDate(carId);
-                            
+
                             const fee = 10000 * timeDiff;
                             console.log("timeDiff: ", timeDiff);
                             console.log("fee", fee);
                             currentStatus.fee = fee;
-                            await updateCheckOutTimeAndFee(carId, fee);
                             const userId = await userService.findUserIdByNumberPlate(plate);
-                            const paymentResponse = await userService.payMoney(
-                                userId,
-                                fee
-                            );
-                            if (paymentResponse.errCode === 0) { // Thanh toán thành công
-                                console.log( 'log from sensorService.js',
-                                    paymentResponse.errMessage
-                                );
-                            }
-                            else if (paymentResponse.errCode === 2) { // Không đủ tiền
-                                console.log('log from sensorService.js',
-                                    paymentResponse.errMessage
-                                );
-                                // Thanh toán tiền mặt
+                            if (!userId) {
+                                console.log(`[Exit Car] ❌ Biển số ${plate} không có người dùng nên thanh toán tiền mặt`);
+                                currentStatus.cash = true;
+                                currentStatus.ticketTypeOut = "day";
+                                broadcastStatus(currentStatus);
+                                return;
                             }
                             else {
-                                console.log( // Lỗi khác
-                                    'log from sensorService.js',
-                                    paymentResponse.errMessage
+                                const paymentResponse = await userService.payMoney(
+                                    userId,
+                                    fee
                                 );
+                                if (paymentResponse.errCode === 0) { // Thanh toán thành công
+                                    console.log('log from sensorService.js',
+                                        paymentResponse.errMessage
+                                    );
+                                    await updateCheckOutTimeAndFee(carId, fee);
+
+                                    // Gửi lệnh mở servo
+                                    if (plate !== "error" && ws && ws.readyState === 1) {
+                                        ws.send(JSON.stringify({ openExitServo: true }));
+                                    }
+                                }
+                                else if (paymentResponse.errCode === 2) { // Không đủ tiền
+                                    console.log('log from sensorService.js',
+                                        paymentResponse.errMessage
+                                    );
+                                    // Thanh toán tiền mặt
+                                    currentStatus.cash = true;
+                                    broadcastStatus(currentStatus);
+
+                                }
+                                else {
+                                    console.log( // Lỗi khác
+                                        'log from sensorService.js',
+                                        paymentResponse.errMessage
+                                    );
+                                }
+                                currentStatus.ticketTypeOut = "day";
                             }
-                            currentStatus.ticketTypeOut = "day";
+
+
                         }
                         broadcastStatus(currentStatus);
                     } catch (err) {
@@ -483,7 +525,7 @@ export const manualPlateCorrectionEntry = async (wrongPlate, correctPlate) => {
             }
             // Kiểm tra xem vé tháng còn hạn hay không
             await createParkingLogs(checkResponse.carId);
-            const ticketExisted = await checkTicketExisted(checkResponse.carId);
+            const ticketExisted = await checkMonthTicketExisted(checkResponse.carId);
             if (ticketExisted.errCode === 1) {
                 // Vé đã tồn tại
                 const currentDate = new Date();
