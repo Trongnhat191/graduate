@@ -1,6 +1,6 @@
 // src/components/ParkingStatus.js
 import React, { useEffect, useState } from 'react';
-import './ParkingStatus.css'; // Tạo nếu bạn có style
+import './ParkingStatus.scss'; // Tạo nếu bạn có style
 
 function ParkingStatus() {
   const [status, setStatus] = useState({

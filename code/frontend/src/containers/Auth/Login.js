@@ -69,11 +69,11 @@ class Login extends Component {
   render() {
     // hàm render chỉ render 1 khối
     return (
-      <div className="login-background">
-        <div className="login-container">
-          <div className="login-content row">
-            <div className="col-12 text-login">Đăng nhập</div>
-            <div className="col-12 form-group login-input">
+      <div className="login-background1">
+        <div className="login-container1">
+          <div className="login-content1 row">
+            <div className="col-12 text-login1">Đăng nhập</div>
+            <div className="col-12 form-group login-input1">
               {/* <label>Tên đăng nhập</label> */}
               <input
                 type="text"
@@ -84,9 +84,9 @@ class Login extends Component {
                 onChange={(event) => this.handleOnChaneUsername(event)}
               />
             </div>
-            <div className="col-12 form-group login-input">
+            <div className="col-12 form-group login-input1">
               {/* <label>Password</label> */}
-              <div className="custom-input-password">
+              <div className="custom-input-password1">
                 <input
                   type={this.state.isShowPassword ? "text" : "password"}
                   className="form-control"
@@ -109,7 +109,7 @@ class Login extends Component {
             </div>
             <div className="col-12">
               <button
-                className="btn-login"
+                className="btn-login1"
                 onClick={() => {
                   this.handleLogin();
                 }}
@@ -118,10 +118,10 @@ class Login extends Component {
               </button>
             </div>
 
-            <a href='/forgot-password' className="forgot-password">Quên mật khẩu?</a>
+            <a href='/forgot-password' className="forgot-password1">Quên mật khẩu?</a>
 
             <div style = {{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-              <span className="register">Chưa có tài khoản?</span>
+              <span className="register1">Chưa có tài khoản?</span>
               <a href='/register'> Đăng ký</a>
             </div>
           </div>
