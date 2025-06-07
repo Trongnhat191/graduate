@@ -4,9 +4,9 @@ export const adminMenu = [
             {
                 name: 'Quản trị hệ thống', link: '/system/user-manage', 
             },
-            // {
-            //     name: "Thống kê doanh thu", link: '/system/statistic-revenue',
-            // }
+            {
+                name: "Thống kê doanh thu", link: '/system/statistic-revenue',
+            }
             // { name: 'menu.system.system-parameter.header', link: '/system/system-parameter' },
         ]
     },
