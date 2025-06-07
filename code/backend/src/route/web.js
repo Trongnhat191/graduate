@@ -3,6 +3,7 @@ import homeController from "../controllers/homeController.js";
 import userController from "../controllers/userController.js";
 import sensorController from "../controllers/sensorController.js";
 import carController from "../controllers/carController.js";
+import parkingLogController from "../controllers/parkingLogController.js";
 import { callbackMomoPayment, createMomoPayment, rechargeBalance, callbackRechargeBalance } from "../controllers/paymentController.js";
 import crypto from "crypto";
 import axios from "axios";
@@ -51,6 +52,8 @@ let initWebRoutes = (app) => {
   // Momo payment recharge 
   router.post("/api/momo/recharge", rechargeBalance);
   router.post("/api/momo/callback-recharge", callbackRechargeBalance);
+
+  router.get("/api/parking-logs", parkingLogController.handleGetParkingLogsByUserId);
 
   // Manual payment confirm
   router.post("/api/manual-payment-confirm", sensorController.handleManualPaymentConfirm);

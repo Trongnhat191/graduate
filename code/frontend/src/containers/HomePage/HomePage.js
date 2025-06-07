@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import HomeHeader from "./HomeHeader";
 import ParkingStatus from "./Section/ParkingStatus";
-import History from "./Section/History"
+import History from "./Section/UserHistory"
 import BuyMonthTicket from "./Section/BuyMonthTicket";
 import RechargeBalance from "./Section/RechargeBalance";
 import ModalShowProfile from "./ModalShowProfile";
