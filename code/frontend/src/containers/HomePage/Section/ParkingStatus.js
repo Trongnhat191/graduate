@@ -1,52 +1,69 @@
 // src/components/ParkingStatus.js
-import React, { useEffect, useState } from 'react';
-import './ParkingStatus.scss'; // Tạo nếu bạn có style
+import React, { Component } from 'react';
+import './ParkingStatus.scss';
 
-function ParkingStatus() {
-  const [status, setStatus] = useState({
-    slot1: 'empty',
-    slot2: 'empty',
-    slot3: 'empty',
-    slot4: 'empty',
-  });
+class ParkingStatus extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            status: {
+                slot1: 'empty',
+                slot2: 'empty',
+                slot3: 'empty',
+                slot4: 'empty',
+                slot5: 'empty'
+            }
+        };
+        this.socket = null;
+    }
 
-  useEffect(() => {
-    const socket = new WebSocket('ws://localhost:6969'); // WebSocket server của bạn
+    componentDidMount() {
+        this.socket = new WebSocket('ws://localhost:6969');
 
-    socket.onopen = () => {
-      console.log('[CLIENT] WebSocket connected');
-    };
+        this.socket.onopen = () => {
+            console.log('[CLIENT] WebSocket connected');
+        };
 
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log('[CLIENT] Nhận trạng thái:', data);
-      setStatus(data);
-    };
+        this.socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            this.setState({ status: data });
+        };
+    }
 
-    return () => socket.close();
-  }, []);
+    componentWillUnmount() {
+        if (this.socket) {
+            this.socket.close();
+        }
+    }
 
-  const renderSlot = (slotNumber, state) => (
-    <div className={`card ${state}`}>
-      <div className="icon"><img src = "/images.png"/></div>
-      <div className="slot-label">Vị trí {slotNumber}</div>
-      <div className="status-text">
-        {state === 'occupied' ? 'Đang có xe' : 'Còn trống'}
-      </div>
-    </div>
-  );
+    renderSlot(slotNumber, state) {
+        return (
+            <div className={`card ${state}`} key={slotNumber}>
+                <div className="icon"><img src="/images.png" alt="car" /></div>
+                <div className="slot-label">Vị trí {slotNumber}</div>
+                <div className="status-text">
+                    {state === 'occupied' ? 'Đang có xe' : 'Còn trống'}
+                </div>
+            </div>
+        );
+    }
 
-  return (
-    <div className="parking-area">
-      {/* <h2>Trạng thái bãi đỗ xe</h2> */}
-      {/* <div className="slots"> */}
-        {renderSlot(4, status.slot4)}
-        {renderSlot(3, status.slot3)}
-        {renderSlot(2, status.slot2)}
-        {renderSlot(1, status.slot1)}
-      {/* </div> */}
-    </div>
-  );
+    render() {
+        const { slot1, slot2, slot3, slot4, slot5 } = this.state.status;
+
+        return (
+            <div className='parking-container'>
+                <div className="parking-slot">
+                {this.renderSlot(5, slot4)}
+                {this.renderSlot(4, slot3)}
+                {this.renderSlot(3, slot5)}
+                {this.renderSlot(2, slot2)}
+                {this.renderSlot(1, slot1)}
+            </div>
+            </div>
+            
+        );
+    }
 }
 
 export default ParkingStatus;

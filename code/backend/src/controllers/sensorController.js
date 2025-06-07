@@ -25,6 +25,7 @@ export const registerWSS = (wss) => {
           typeof data.slot2 !== "undefined" &&
           typeof data.slot3 !== "undefined" &&
           typeof data.slot4 !== "undefined" &&
+          typeof data.slot5 !== "undefined" &&
           typeof data.entry !== "undefined" &&
           typeof data.exit !== "undefined"
         ) {

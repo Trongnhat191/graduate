@@ -6,7 +6,7 @@ import History from "./Section/History"
 import BuyMonthTicket from "./Section/BuyMonthTicket";
 import RechargeBalance from "./Section/RechargeBalance";
 import ModalShowProfile from "./ModalShowProfile";
-
+import "./HomePage.scss";
 class HomePage extends Component {
 	constructor(props) {
 		super(props);

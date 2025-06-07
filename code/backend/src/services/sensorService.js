@@ -9,7 +9,7 @@ let currentStatus = {
     slot2: "empty",
     slot3: "empty",
     slot4: "empty",
-
+    slot5: "empty",
     currentNumberPlateIn: "",
     imageIn: "",
     ticketTypeIn: "",
@@ -263,7 +263,7 @@ let deleteTicketByCarId = async (carId) => {
     });
 };
 
-export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot4 }, ws) => {
+export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot4, slot5 }, ws) => {
     const response = {
         openEntryServo: false,
         openExitServo: false,
@@ -494,13 +494,15 @@ export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot
         slot2: slot2 < 10 ? "occupied" : "empty",
         slot3: slot3 < 10 ? "occupied" : "empty",
         slot4: slot4 < 10 ? "occupied" : "empty",
+        slot5: slot5 < 10 ? "occupied" : "empty",
     };
 
     const isChanged =
         newStatus.slot1 !== currentStatus.slot1 ||
         newStatus.slot2 !== currentStatus.slot2 ||
         newStatus.slot3 !== currentStatus.slot3 ||
-        newStatus.slot4 !== currentStatus.slot4;
+        newStatus.slot4 !== currentStatus.slot4 ||
+        newStatus.slot5 !== currentStatus.slot5;
 
     if (isChanged) {
         currentStatus = newStatus;

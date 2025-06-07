@@ -22,6 +22,7 @@ int trigSlot1 = 18, echoSlot1 = 5;
 int trigSlot2 = 19, echoSlot2 = 23;
 int trigSlot3 = 4 , echoSlot3 = 32;
 int trigSlot4 = 2 , echoSlot4 = 33;
+int trigSlot5 = 15, echoSlot5 = 34;  
 
 // Cảm biến cổng ra/vào
 int trigEntry = 27, echoEntry = 14;
@@ -53,7 +54,7 @@ float readDistance(int trig, int echo) {
 void openServoNonBlocking(ServoControl &s, const char* name) {
   if (!s.isOpen) {
     Serial.printf("[SERVO] Mở %s...\n", name);
-    s.servo.write(90);
+    s.servo.write(0);
     s.openTime = millis();
     s.isOpen = true;
   }
@@ -62,7 +63,7 @@ void openServoNonBlocking(ServoControl &s, const char* name) {
 // Tự đóng servo sau 5 giây
 void handleServoTimeout(ServoControl &s, const char* name) {
   if (s.isOpen && millis() - s.openTime >= 5000) {
-    s.servo.write(0);
+    s.servo.write(90);
     s.isOpen = false;
     Serial.printf("[SERVO] Đóng %s\n", name);
   }
@@ -127,12 +128,13 @@ void setup() {
   pinMode(trigSlot4, OUTPUT); pinMode(echoSlot4, INPUT);
   pinMode(trigEntry,  OUTPUT); pinMode(echoEntry, INPUT);
   pinMode(trigExit,   OUTPUT); pinMode(echoExit, INPUT);
+  pinMode(trigSlot5, OUTPUT);pinMode(echoSlot5, INPUT);
 
   // Gắn servo
   servoEntryCtrl.servo.attach(servoEntryCtrl.pin);
   servoExitCtrl.servo.attach(servoExitCtrl.pin);
-  servoEntryCtrl.servo.write(0);
-  servoExitCtrl.servo.write(0);
+  servoEntryCtrl.servo.write(90);
+  servoExitCtrl.servo.write(90);
 
   lcd.init();
   lcd.backlight();
@@ -161,6 +163,7 @@ void loop() {
     float d2 = readDistance(trigSlot2, echoSlot2);
     float d3 = readDistance(trigSlot3, echoSlot3);
     float d4 = readDistance(trigSlot4, echoSlot4);
+    float d5 = readDistance(trigSlot5, echoSlot5);
     float de = readDistance(trigEntry,  echoEntry);
     float dx = readDistance(trigExit,   echoExit);
 
@@ -170,6 +173,8 @@ void loop() {
     doc["slot2"] = d2;
     doc["slot3"] = d3;
     doc["slot4"] = d4;
+    doc["slot5"] = d5;
+
     doc["entry"] = de;
     doc["exit"]  = dx;
 
