@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Redirect, Route, Switch } from 'react-router-dom';
 import UserManage from '../containers/System/UserManage';
 import Header from '../containers/Header/Header';
+import StatisticRevenue from '../containers/System/StatisticRevenue';
 import StaffManage from '../containers/System/StaffManage';
 import StaffHeader from '../containers/Header/StaffHeader';
 import StaffHistory from '../containers/System/StaffHistory';
@@ -20,8 +21,9 @@ class System extends Component {
                     <div className="system-list">
                         <Switch>
                             <Route path="/system/user-manage" component={UserManage} />
-                            {/* <Route path="/system/staff-manage" component={StaffManage} />
-                            <Route path="/system/staff-history" component={StaffHistory} />  */}
+                            <Route path="/system/staff-manage" component={StaffManage} />
+                            <Route path="/system/staff-history" component={StaffHistory} /> 
+                            <Route path="/system/statistic-revenue" component={StatisticRevenue} /> 
                             <Route component={() => { return (<Redirect to={systemMenuPath} />) }} />
                         </Switch>
                     </div>

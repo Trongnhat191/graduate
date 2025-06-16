@@ -40,7 +40,7 @@ class ParkingStatus extends Component {
         return (
             <div className={`card ${state}`} key={slotNumber}>
                 <div className="icon"><img src="/images.png" alt="car" /></div>
-                <div className="slot-label">Vị trí {slotNumber}</div>
+                {/* <div className="slot-label">Vị trí {slotNumber}</div> */}
                 <div className="status-text">
                     {state === 'occupied' ? 'Đang có xe' : 'Còn trống'}
                 </div>
@@ -52,16 +52,33 @@ class ParkingStatus extends Component {
         const { slot1, slot2, slot3, slot4, slot5 } = this.state.status;
 
         return (
-            <div className='parking-container'>
-                <div className="parking-slot">
-                {this.renderSlot(5, slot4)}
-                {this.renderSlot(4, slot3)}
-                {this.renderSlot(3, slot5)}
-                {this.renderSlot(2, slot2)}
-                {this.renderSlot(1, slot1)}
+            <div className='parking-area'>
+                <div className='parking-container'>
+                    <div className="parking-slot">
+                        {this.renderSlot(5, slot4)}
+                        {this.renderSlot(4, slot3)}
+                        {this.renderSlot(3, slot5)}
+                        {this.renderSlot(2, slot2)}
+                        {this.renderSlot(1, slot1)}
+                    </div>
+                </div>
+                <div className='parking-entrance'>
+                    <div className='outside-left'>
+
+                    </div>
+                    <div className='exit-way'>
+
+                    </div>
+                    <div className='entry-way'>
+
+                    </div>
+                    <div className='outside-right'>
+
+                    </div>
+                </div>
             </div>
-            </div>
-            
+
+
         );
     }
 }

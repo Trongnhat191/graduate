@@ -15,15 +15,69 @@ h1 {
   color: #333;
   margin-bottom: 40px;
 }
-
-.parking-container{
-  border: 6px solid red;
-  height: 700px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.parking-area{
+  .parking-container {
+    position: relative;
+    height: 550px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 6px solid red; /* hoặc có thể set viền nào bạn muốn */
+  }
+  
+  .parking-container::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 6px;
+    width: 100px; /* độ dài đoạn viền */
+    background-color: white;
+  }
+  
+  .parking-entrance{
+    border: 6px solid green;
+    width: 100%;
+    height: 200px;
+    display: flex;
+    .outside-left{
+      width: 25%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #e0f7fa;
+    }
+    .exit-way{
+      width: 25%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #b2ebf2;
+    }
+    .entry-way{
+      width: 25%;
+      height:100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #80deea;
+    }
+    .outside-right{
+      width: 25%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #4dd0e1;
+    }
+  }
 }
+
+
 .parking-slot {
   // margin-top: 20px;
   

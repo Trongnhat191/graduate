@@ -4,6 +4,7 @@ import userController from "../controllers/userController.js";
 import sensorController from "../controllers/sensorController.js";
 import carController from "../controllers/carController.js";
 import parkingLogController from "../controllers/parkingLogController.js";
+import statisticController from '../controllers/statisticController.js';
 import { callbackMomoPayment, createMomoPayment, rechargeBalance, callbackRechargeBalance } from "../controllers/paymentController.js";
 import crypto from "crypto";
 import axios from "axios";
@@ -38,6 +39,8 @@ let initWebRoutes = (app) => {
   router.put("/api/edit-user", userController.handleEditUser);
   router.delete("/api/delete-user", userController.handleDeleteUser);
   router.get("/api/get-user-info-by-id", userController.handleGetUserInfoById);
+
+  router.get('/api/statistics/revenue', statisticController.handleGetRevenueStatistics);
 
   router.post("/update", sensorController.handleUpdate);
   router.post("/manual-plate-correction", sensorController.handlemanualPlateCorrectionEntry);
