@@ -1,7 +1,7 @@
 .home-header-container {
   height: 60px;
   width: 100%;
-  background-color: #fff;
+  background-color: #1a2236;
 
   .home-header-content {
     display: flex;
@@ -17,7 +17,7 @@
         font-size: 20px;
         font-weight: bold;
         cursor: pointer;
-        color: black;
+        color: #fff;
         padding: 10px;
       }
     }
@@ -30,18 +30,18 @@
 
     .left-content {
       width: 25%;
-      border: 1px solid blue;
+      // border: 1px solid blue;
     }
 
     .center-content {
       width: 50%;
-      border: 1px solid green;
+      // border: 1px solid green;
       justify-content: center;
     }
 
     .right-content {
       width: 25%;
-      border: 1px solid red;
+      // border: 1px solid red;
       justify-content: flex-end;
       padding-right: 1rem;
       position: relative;
@@ -73,7 +73,7 @@
         .user-menu-wrapper{
           .greeting-text {
             font-size: 16px;
-            color: #333;
+            color: #fff;
             font-weight: 500;
             margin-right: 10px;
           }
@@ -81,10 +81,10 @@
           .user-icon {
             cursor: pointer;
             font-size: 28px;
-            color: #333;
+            color: #fff;
   
             &:hover {
-              color: #007bff;
+              color: #4fc3f7;
             }
           }
   
@@ -92,8 +92,8 @@
             position: absolute;
             top: 100%;
             right: 0;
-            background-color: #fff;
-            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
             border-radius: 6px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             padding: 8px 0;
@@ -103,13 +103,14 @@
             .dropdown-item {
               padding: 10px 15px;
               font-size: 15px;
-              color: #333;
+              color: #222;
               cursor: pointer;
               white-space: nowrap;
-              transition: background-color 0.2s;
+              transition: background-color 0.2s, color 0.2s;
   
               &:hover {
-                background-color: #f5f5f5;
+                background-color: #f0f4ff;
+                color: #007bff;
               }
   
               a {

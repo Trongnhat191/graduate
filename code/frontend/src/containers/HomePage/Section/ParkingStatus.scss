@@ -1,45 +1,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap');
 
-body {
-  margin: 0;
-  font-family: 'Rubik', sans-serif;
-  background: #f0f2f5;
-}
+// body {
+//   margin: 0;
+//   font-family: 'Rubik', sans-serif;
+//   // background: #f0f2f5;
+// }
 
-.App {
-  text-align: center;
-  padding: 30px;
-}
+// .App {
+//   text-align: center;
+//   padding: 30px;
+// }
 
-h1 {
-  color: #333;
-  margin-bottom: 40px;
-}
+// h1 {
+//   color: #333;
+//   margin-bottom: 40px;
+// }
 .parking-area{
+  // margin-left: 125px;
+  // margin-right: 62px;
   .parking-container {
+    margin-left: 125px;
+    margin-top: 50px;
     position: relative;
     height: 550px;
-    width: 100%;
+    width: 1500px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 6px solid red; /* hoặc có thể set viền nào bạn muốn */
-  }
-  
-  .parking-container::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    height: 6px;
-    width: 100px; /* độ dài đoạn viền */
-    background-color: white;
+    // border: 6px solid red; /* hoặc có thể set viền nào bạn muốn */
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18); // đổ bóng viền ngoài
+    border-radius: 20px; // tuỳ chọn, giúp bóng mềm mại hơn
   }
   
   .parking-entrance{
-    border: 6px solid green;
-    width: 100%;
+    // border: 6px solid green;
+    margin-left: 125px;
+    width: 1500px;
     height: 200px;
     display: flex;
     .outside-left{
@@ -48,7 +44,7 @@ h1 {
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #e0f7fa;
+      // background-color: #e0f7fa;
     }
     .exit-way{
       width: 25%;
@@ -56,7 +52,7 @@ h1 {
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #b2ebf2;
+      background-color: #FEE2E2;
     }
     .entry-way{
       width: 25%;
@@ -64,7 +60,21 @@ h1 {
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #80deea;
+      background-color: #D5FFCE;
+    }
+    .exit-way, .entry-way {
+      position: relative;
+      .arrow-icon {
+        font-size: 88px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        color: #e53935; // đỏ cho exit
+        &.entry {
+          color: #43a047; // xanh cho entry
+        }
+      }
     }
     .outside-right{
       width: 25%;
@@ -72,7 +82,7 @@ h1 {
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #4dd0e1;
+      // background-color: #4dd0e1;
     }
   }
 }

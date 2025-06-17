@@ -67,10 +67,14 @@ class ParkingStatus extends Component {
 
                     </div>
                     <div className='exit-way'>
-
+                        <span className="arrow-icon exit">
+                            <i className="fas fa-arrow-down"></i>
+                        </span>
                     </div>
                     <div className='entry-way'>
-
+                        <span className="arrow-icon entry">
+                            <i className="fas fa-arrow-up"></i>
+                        </span>
                     </div>
                     <div className='outside-right'>
 

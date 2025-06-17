@@ -27,7 +27,7 @@ class HomeHeader extends Component {
                     <div className="left-content">
                         {/* <div className="left-content"> */}
                             <span className="home-logo" onClick={() => this.props.onChangeView("Parking")}>
-                                🅿️ Smart Parking
+                                Smart Parking
                             </span>
                         {/* </div> */}
 
