@@ -49,7 +49,8 @@ class App extends Component {
             {/* Nếu đăng nhập rôi thì render thêm Header */}
             <span className="content-container">
               <Switch>
-                <Route path={path.HOME} exact component={Home} /> // Vào Home thì không cần phải đăng nhập
+              {/* // Vào Home thì không cần phải đăng nhập */}
+                <Route path={path.HOME} exact component={Home} /> 
                 <Route
                   path={path.LOGIN}
                   component={userIsNotAuthenticated(Login)}
