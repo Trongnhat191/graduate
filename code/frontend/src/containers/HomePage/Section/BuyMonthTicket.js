@@ -81,7 +81,7 @@ class BuyMonthTicket extends Component {
                 <div className='current-ticket-info'>
                     <h3>Thông tin vé hiện tại</h3>
                     <p>Biển số xe: {this.state.numberPlate}</p>
-                    <p>Ngày hết hạn vé: {this.state.endDate ? this.state.endDate : "Chưa mua vé"}</p>
+                    <p>Ngày hết hạn vé: {this.state.endDate ? this.state.endDate.substring(0, 10) : "Chưa mua vé"}</p>
 
                 </div>
                 <div className="form-group">
@@ -96,7 +96,7 @@ class BuyMonthTicket extends Component {
                             onChange={this.handleOnChangeMonth}
                         />
                     </span>
-                    <span>
+                    <span className='price-per-month'>
                         Đơn giá: 10000/tháng
                     </span>
                 </div>

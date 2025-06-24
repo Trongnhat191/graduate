@@ -57,9 +57,9 @@ class UserHistory extends Component {
 
         return (
             <div className="history-container">
-                <h3 className="text-center">Parking History</h3>
+                <h3 className="text-center-history">Parking History</h3>
                 <table className="history-table">
-                    <thead>
+                    <thead className="history-table-header">
                         <tr>
                             <th>Number Plate</th>
                             <th>Check-In Time</th>
@@ -67,7 +67,7 @@ class UserHistory extends Component {
                             <th>Ticket Type</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="history-table-body">
                         {parkingLogs.map(log => (
                             <tr key={log.id}>
                                 <td>{log.numberPlate}</td>

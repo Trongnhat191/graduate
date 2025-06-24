@@ -225,7 +225,7 @@ class Login extends Component {
                                     this.handleAddNewUser(this.state);
                                 }}
                             >
-                                Login
+                                Đăng ký
                             </button>
                         </div>
 

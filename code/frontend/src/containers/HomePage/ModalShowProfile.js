@@ -43,7 +43,7 @@ class ModalShowProfile extends Component {
     // console.log("fullName from ModalShowProfile", this.props.userInfo.fullName || '');
     return (
       <Modal isOpen={this.props.isOpen} toggle={this.toggle}>
-        <ModalHeader toggle={this.toggle}>Thông tin cá nhân</ModalHeader>
+        <ModalHeader >Thông tin cá nhân</ModalHeader>
         <ModalBody>
           <div className="modal-user-body">
             <div className="input-container">

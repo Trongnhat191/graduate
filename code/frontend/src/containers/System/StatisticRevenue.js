@@ -76,7 +76,7 @@ class StatisticRevenue extends Component {
         return (
             <div className="statistic-revenue-container container mt-3">
 
-                <h2 className="title text-center mb-4">Thống kê doanh thu</h2>
+                <h2 className="title text-center1 mb-4">Thống kê doanh thu</h2>
 
                 <div className="controls card shadow-sm p-3 mb-4">
                     <div className="row">
@@ -109,11 +109,11 @@ class StatisticRevenue extends Component {
                                 showMonthYearPicker={periodType === 'month'}
                                 showYearPicker={periodType === 'year'}
                             />
-                            <small className="form-text text-muted">
+                            {/* <small className="form-text text-muted">
                                 {periodType === 'day' && "Chọn ngày để xem doanh thu ngày đó."}
                                 {periodType === 'month' && "Chọn một ngày trong tháng để xem doanh thu tháng đó."}
                                 {periodType === 'year' && "Chọn một ngày trong năm để xem doanh thu năm đó."}
-                            </small>
+                            </small> */}
                         </div>
                         <div className="form-group col-md-4 d-flex align-items-end">
                             <button

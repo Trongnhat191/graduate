@@ -18,11 +18,14 @@
 .parking-area{
   // margin-left: 125px;
   // margin-right: 62px;
+  background-color: #e9edf5;
+  color: #e9edf5;
   .parking-container {
-    margin-left: 125px;
-    margin-top: 50px;
+    margin-left: 145px;
+    margin-top: 20px;
+    padding-top: 25px;
     position: relative;
-    height: 550px;
+    height: 600px;
     width: 1500px;
     display: flex;
     flex-direction: column;
@@ -36,7 +39,7 @@
     // border: 6px solid green;
     margin-left: 125px;
     width: 1500px;
-    height: 200px;
+    height: 180px;
     display: flex;
     .outside-left{
       width: 25%;

@@ -132,7 +132,7 @@ class UserManage extends Component {
                 />
                 }
                 {/* --------------Title--------------- */}
-                <div className="title text-center">Manage users with me</div>
+                <div className="title text-center1">Manage users with me</div>
                 {/* ---------------------------------- */}
 
                 {/* --------------Button Add new user--------------- */}

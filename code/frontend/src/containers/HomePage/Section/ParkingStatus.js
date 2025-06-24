@@ -53,7 +53,11 @@ class ParkingStatus extends Component {
 
         return (
             <div className='parking-area'>
+                <div className="parking-top">
+                        Hello, Parking Status
+                    </div>
                 <div className='parking-container'>
+                    
                     <div className="parking-slot">
                         {this.renderSlot(5, slot4)}
                         {this.renderSlot(4, slot3)}
