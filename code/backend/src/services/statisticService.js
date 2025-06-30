@@ -1,4 +1,3 @@
-// filepath: /home/nhat/Documents/graduate/code/backend/src/services/statisticService.js
 import db from '../models/index.js';
 import { Op } from 'sequelize';
 
@@ -29,6 +28,30 @@ const getParkingLogRevenue = async (startDate, endDate) => {
     }
 };
 
+const getMonthlyTicketRevenue = async (startDate, endDate) => {
+    try {
+        const result = await db.Ticket.sum('price', {
+            where: {
+                ticketType: 'month',
+                startDate: {
+                    [Op.between]: [startDate, endDate],
+                },
+            },
+        });
+        return {
+            success: true,
+            totalRevenue: result || 0,
+        };
+    } catch (error) {
+        console.error("Error in getMonthlyTicketRevenue: ", error);
+        return {
+            success: false,
+            message: "Error fetching monthly ticket revenue.",
+            error: error.message
+        };
+    }
+};
+
 const getRevenueStatistics = async (periodType, dateString) => {
     let startDate, endDate;
     const targetDate = new Date(dateString);
@@ -52,13 +75,13 @@ const getRevenueStatistics = async (periodType, dateString) => {
 
     try {
         const parkingLogRevenueResult = await getParkingLogRevenue(startDate, endDate);
-        // const monthlyTicketRevenueResult = await getMonthlyTicketRevenue(startDate, endDate); // Future enhancement
+        const monthlyTicketRevenueResult = await getMonthlyTicketRevenue(startDate, endDate);
 
         if (!parkingLogRevenueResult.success) {
             return { success: false, message: "Failed to fetch revenue components." };
         }
 
-        const totalRevenue = parkingLogRevenueResult.totalRevenue; // + (monthlyTicketRevenueResult.totalRevenue || 0);
+        const totalRevenue = parkingLogRevenueResult.totalRevenue+ (monthlyTicketRevenueResult.totalRevenue || 0);
         
         return {
             success: true,
@@ -70,7 +93,7 @@ const getRevenueStatistics = async (periodType, dateString) => {
                     queryDate: dateString
                 },
                 parkingLogRevenue: parkingLogRevenueResult.totalRevenue,
-                // monthlyTicketRevenue: monthlyTicketRevenueResult.totalRevenue, // Future
+                monthlyTicketRevenue: monthlyTicketRevenueResult.totalRevenue, // Future
                 totalRevenue: totalRevenue,
             },
         };

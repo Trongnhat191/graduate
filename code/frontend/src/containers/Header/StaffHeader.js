@@ -12,10 +12,6 @@ const staffMenu = [
             {
                 name: 'Quản lý vào ra',
                 link: '/system/staff-manage'
-            },
-            {
-                name: 'Lịch sử vào ra',
-                link: '/system/staff-history'
             }
         ]
     },

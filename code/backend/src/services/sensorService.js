@@ -305,7 +305,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot
                     const lastLine = lines[lines.length - 1];
                     const plate = lastLine.trim();
                     const imageName = lines[0].trim();
-
+                    console.log("[Entry Car] 🅿️ Biển số nhận được: ", plate);
                     // Gửi lệnh mở servo 
                     if (plate !== "error" && ws && ws.readyState === 1) {
                         ws.send(JSON.stringify({ openEntryServo: true, "plate": plate }));
@@ -530,7 +530,8 @@ export const manualPlateCorrectionEntry = async (wrongPlate, correctPlate) => {
         });
         // Kiểm tra xem biển số đúng đã tồn tại chưa
         const checkResponse = await checkPlateExisted(correctPlate);
-        if (checkResponse.errCode === 1) {
+        let ticketTypeIn = "day";
+        if (checkResponse.errCode === 1) {// Biển số đã tồn tại và có người dùng
             if (wrongCar) {
                 // Xóa các bản ghi liên quan đến biển số sai
                 await db.ParkingLog.destroy({ where: { carId: wrongCar.id } });
@@ -554,8 +555,10 @@ export const manualPlateCorrectionEntry = async (wrongPlate, correctPlate) => {
                     console.log(
                         `[Create Car] ✅ Đã tạo vé ngày mới cho biển số ${correctPlate}`
                     );
+                    ticketTypeIn = "day";
                 } else {
                     console.log(`[Create Car] ✅ Vé còn hiệu lực, cho xe vào`);
+                    ticketTypeIn = "month";
                 }
             } else {
                 // Vé chưa tồn tại
@@ -564,8 +567,10 @@ export const manualPlateCorrectionEntry = async (wrongPlate, correctPlate) => {
                 console.log(
                     `[Create Car] ✅ Đã tạo vé ngày cho biển số ${correctPlate}`
                 );
+                ticketTypeIn = "day";
             }
         } else {
+            ticketTypeIn = "day";
             // Cập nhật biển số đúng thay cho biển số sai
             if (wrongPlate !== 'error') {
                 const car = await db.Car.findOne({
@@ -582,17 +587,20 @@ export const manualPlateCorrectionEntry = async (wrongPlate, correctPlate) => {
                 return { success: true, message: "Biển số chưa tồn tại" };
             }
             else {
+                console.log(`[Create Car] ❌ Biển số sai là 'error', không thể cập nhật`);
                 //create new car with correct plate
                 const newCar = await db.Car.create({
                     numberPlate: correctPlate,
                 });
                 await createParkingLogs(newCar.id);
                 await createNewTicket(newCar.id);
+                ticketTypeIn = "day";
             }
         }
         broadcastStatus({
             openEntryServo: true,
             plate: correctPlate,
+            ticketTypeIn: ticketTypeIn
         });
         return { success: true, message: "Đã sửa biển số và cập nhật dữ liệu" };
     } catch (err) {

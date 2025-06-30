@@ -75,6 +75,7 @@ class StaffManage extends Component {
 	}
 	handlenewNumberPlateInUpdate = async () => {
 		const wrongPlate = this.state.currentNumberPlateIn; // Nên lấy từ state/props thực tế
+		// console.log("check wrongPlate from handlenewNumberPlateInUpdate", wrongPlate);
 		const correctPlate = this.state.newNumberPlateIn;
 		if (!correctPlate) {
 			alert("Vui lòng nhập biển số mới");
@@ -171,14 +172,14 @@ class StaffManage extends Component {
 								</div>
 								<div className="current-number-plate">
 									<div className="current-number-plate-title">
-										Biển số hiện tại
+										Biển số hiện tại:
 									</div>
 									<div className="current-number-plate-content">
 										{this.state.currentNumberPlateIn || "Chưa có dữ liệu"}
 									</div>
 								</div>
 								<div className="ticket-type">
-									<div className="ticket-type-title">Loại vé</div>
+									<div className="ticket-type-title">Loại vé:</div>
 									<div className="ticket-type-content">
 										{this.state.ticketTypeIn === "month"
 											? "Vé tháng"
@@ -188,7 +189,7 @@ class StaffManage extends Component {
 									</div>
 								</div>
 								<div className="new-number-plate">
-									<div className="new-number-plate-title">Biển số mới</div>
+									<div className="new-number-plate-title">Biển số mới:</div>
 									<input
 										className="new-number-plate-input"
 										onChange={(event) => {
@@ -222,7 +223,7 @@ class StaffManage extends Component {
 									<div className="right-info-1">
 										<div className="current-number-plate">
 											<div className="current-number-plate-title">
-												Biển số hiện tại
+												Biển số hiện tại:
 											</div>
 											<div className="current-number-plate-content">
 												{this.state.currentNumberPlateOut || "Chưa có dữ liệu"}
@@ -239,7 +240,7 @@ class StaffManage extends Component {
 											</div>
 										</div>
 										<div className="new-number-plate">
-											<div className="new-number-plate-title">Biển số mới</div>
+											<div className="new-number-plate-title">Biển số mới:</div>
 											<input
 												className="new-number-plate-input"
 												onChange={(event) => {
@@ -259,10 +260,10 @@ class StaffManage extends Component {
 										</div>
 									</div>
 									<div className="right-info-2">
-										<div>
-											Số tiền
+										<div className="fee-title">
+											Số tiền:
 										</div>
-										<div>
+										<div className="fee-content">
 											{this.state.fee ? this.state.fee + " VNĐ" : "Chưa có dữ liệu"}
 										</div>
 										<button className="right-info-button" onClick={() => {

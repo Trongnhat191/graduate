@@ -132,11 +132,7 @@ class StatisticRevenue extends Component {
 
                 {statistics && !loading && !error && (
                     <div className="results card shadow-sm p-3 mt-4">
-                        <h4>Kết quả thống kê cho {
-                            periodType === 'day' ? `ngày ${new Date(statistics.period.startDate).toLocaleDateString('vi-VN')}` :
-                                periodType === 'month' ? `tháng ${new Date(statistics.period.startDate).getMonth() + 1}/${new Date(statistics.period.startDate).getFullYear()}` :
-                                    `năm ${new Date(statistics.period.startDate).getFullYear()}`
-                        }</h4>
+                        
                         <table className="table table-bordered table-hover mt-3">
                             <thead className="thead-light">
                                 <tr>
@@ -149,18 +145,16 @@ class StatisticRevenue extends Component {
                                     <td>Doanh thu từ phí gửi xe (vé ngày/lượt)</td>
                                     <td>{statistics.parkingLogRevenue.toLocaleString('vi-VN')}</td>
                                 </tr>
-                                {/* <tr>
+                                <tr>
                                     <td>Doanh thu từ vé tháng (Mới/Gia hạn)</td>
                                     <td>{statistics.monthlyTicketRevenue ? statistics.monthlyTicketRevenue.toLocaleString('vi-VN') : 'N/A'}</td>
-                                </tr> */}
+                                </tr>
                                 <tr className="table-primary font-weight-bold">
                                     <td><strong>Tổng doanh thu</strong></td>
                                     <td><strong>{statistics.totalRevenue.toLocaleString('vi-VN')}</strong></td>
                                 </tr>
                             </tbody>
                         </table>
-                        <p className="text-muted"><small>Dữ liệu từ {new Date(statistics.period.startDate).toLocaleString('vi-VN')} đến {new Date(statistics.period.endDate).toLocaleString('vi-VN')}</small></p>
-                        <p className="text-muted"><small>Ngày truy vấn: {statistics.period.queryDate}</small></p>
                     </div>
                 )}
             </div>
