@@ -291,7 +291,7 @@ let payMoney = (userId, fee) => {
         if (user.balance < fee) {
           resolve({
             errCode: 2,
-            errMessage: "Not enough money",
+            errMessage: "Not enough money, pay by cash",
           });
           return;
         }
@@ -304,7 +304,7 @@ let payMoney = (userId, fee) => {
       } else {
         resolve({
           errCode: 1,
-          errMessage: "User does not exist",
+          errMessage: "User does not exist, pay by cash",
         });
       }
     } catch (e) {

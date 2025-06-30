@@ -103,6 +103,9 @@ class StaffManage extends Component {
 			let response = await manualPlateCorrectionExit(correctPlate);
 			if (response && response.success) {
 				alert("Cập nhật biển số thành công!");
+				this.setState({
+					newNumberPlateOut: "", // Clear input after successful update
+					currentNumberPlateOut: correctPlate}); // Update current number plate
 				// Có thể cập nhật lại UI tại đây nếu cần
 			} else {
 				alert(response?.message || "Cập nhật thất bại!");
@@ -130,7 +133,6 @@ class StaffManage extends Component {
             let response = await manualPaymentConfirm(fee, numberPlate);
             if (response && response.errCode === 0) {
                 alert(response.errMessage || "Thanh toán thành công!");
-                // Optionally, clear the fee or update UI as needed
                 this.setState({
                     fee: "", // Clear fee after successful payment
                     currentNumberPlateOut: "", // Optionally clear number plate

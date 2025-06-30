@@ -222,10 +222,13 @@ let checkIfTicketTypeIsMonth = async (carId) => {
                     carId: carId,
                 },
             });
-            // console.log("ticket: ", ticket.ticketType);
-            // console.log("ticket: ", ticket.id);
+            // console.log("ticket: ", ticket);
             if (ticket) {
+                console.log("ticket: ", ticket.ticketType);
                 if (ticket.ticketType === "month") {
+                    console.log('-----');
+                    console.log("ticket: ", ticket.ticketType);
+
                     resolve(true);
                     // console.log("ticket: ", ticket.id);
                 } else {
@@ -269,12 +272,12 @@ export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot
         openExitServo: false,
     };
 
-    // console.log("Xử lý entry");
+
     if (entry < 10 && !entryHandle) {
         entryHandle = true;
         // response.openEntryServo = true;
         exec(
-            "conda run -n graduate python src/python/detect_plate.py 2 src/public/photos/entry",
+            "conda run -n graduate python src/python/detect_plate.py 0 src/public/photos/entry",
             async (err, stdout, stderr) => {
                 if (err) {
                     console.log("---------------------");
@@ -285,8 +288,6 @@ export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot
                     currentStatus.imageIn = stdout.trim().split("\n")[0];
                     currentStatus.ticketTypeIn = "";
                     broadcastStatus(currentStatus);
-                    // const plate = "error";
-                    // Gửi lệnh mở servo
                     if (ws && ws.readyState === 1) {
                         ws.send(JSON.stringify({ openEntryServo: false, plate: "error" }));
                     }
@@ -334,6 +335,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot
                                 } else {
                                     console.log(`[Create Car] ✅ Vé tháng còn hiệu lực, cho xe vào`);
                                     currentStatus.ticketTypeIn = "month";
+                                    broadcastStatus(currentStatus);
                                 }
                             } else {
                                 // Vé chưa tồn tại
@@ -377,12 +379,11 @@ export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot
     }
 
     // Xử lý exit
-    // console.log("Xử lý exit");
-    if (exit < 10 && !exitHandle) {
+    if (exit < 10 && !exitHandle) { 
         exitHandle = true;
         response.openExitServo = true;
         exec(
-            "conda run -n graduate python src/python/detect_plate.py 2 src/public/photos/exit",
+            "conda run -n graduate python src/python/detect_plate.py 0 src/public/photos/exit",
             async (err, stdout, stderr) => {
                 if (err) {
                     console.log("---------------------");
@@ -399,11 +400,9 @@ export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot
                     const plate = lastLine.trim();
                     const imageName = lines[0].trim();
 
-
-
                     currentStatus.currentNumberPlateOut = plate;
                     currentStatus.imageOut = imageName;
-
+                    broadcastStatus(currentStatus);
                     try {
                         const carId = await findCarIdByPlate(plate);
                         if (!carId) {
@@ -462,7 +461,6 @@ export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot
                                     // Thanh toán tiền mặt
                                     currentStatus.cash = true;
                                     broadcastStatus(currentStatus);
-
                                 }
                                 else {
                                     console.log( // Lỗi khác
@@ -521,7 +519,6 @@ export const manualPlateCorrectionEntry = async (wrongPlate, correctPlate) => {
             },
             raw: false,
         });
-
         // Kiểm tra xem biển số đúng đã tồn tại chưa
         const checkResponse = await checkPlateExisted(correctPlate);
         if (checkResponse.errCode === 1) {
@@ -561,19 +558,33 @@ export const manualPlateCorrectionEntry = async (wrongPlate, correctPlate) => {
             }
         } else {
             // Cập nhật biển số đúng thay cho biển số sai
-            const car = await db.Car.findOne({
-                where: {
-                    numberPlate: wrongPlate,
-                },
-                raw: false,
-            });
-            if (car) {
-                car.numberPlate = correctPlate;
-                await car.save();
+            if (wrongPlate !== 'error') {
+                const car = await db.Car.findOne({
+                    where: {
+                        numberPlate: wrongPlate,
+                    },
+                    raw: false,
+                });
+                if (car) {
+                    car.numberPlate = correctPlate;
+                    await car.save();
+                }
+                broadcastStatus({openEntryServo: true, plate: correctPlate});
+                return { success: true, message: "Biển số chưa tồn tại" };
             }
-            return { success: true, message: "Biển số chưa tồn tại" };
+            else {
+                //create new car with correct plate
+                const newCar = await db.Car.create({
+                    numberPlate: correctPlate,
+                });
+                await createParkingLogs(newCar.id);
+                await createNewTicket(newCar.id);
+            }
         }
-
+        broadcastStatus({
+            openEntryServo: true,
+            plate: correctPlate,
+        });
         return { success: true, message: "Đã sửa biển số và cập nhật dữ liệu" };
     } catch (err) {
         console.error("[Manual Plate Correction] ❌", err);
@@ -584,12 +595,19 @@ export const manualPlateCorrectionEntry = async (wrongPlate, correctPlate) => {
 export const manualPlateCorrectionExit = async (correctPlate) => {
     try {
         const carId = await findCarIdByPlate(correctPlate);
-
-        if (checkIfTicketTypeIsMonth(carId)) {// Nếu là vé tháng
+        if (!carId) {
+            return { success: false, message: "Biển số không tồn tại" };
+        }
+        const isMonthTicket = await checkIfTicketTypeIsMonth(carId);
+        if (isMonthTicket) {// Nếu là vé tháng
             console.log(
                 `[Exit Car] ✅ Vé tháng, không tính phí cho biển số ${correctPlate}`
             );
             await updateCheckOutTimeAndFee(carId, 0);
+            broadcastStatus({
+                openExitServo: true,
+                plate: correctPlate,
+            });
         }
         else {// Nếu là vé ngày
             const timeDiff = await updateEndDate(carId);
@@ -599,26 +617,26 @@ export const manualPlateCorrectionExit = async (correctPlate) => {
             const fee = 10000 * timeDiff;
             currentStatus.fee = fee;
             broadcastStatus(currentStatus);
+
             const userId = await userService.findUserIdByNumberPlate(correctPlate);
             const paymentResponse = await userService.payMoney(userId, fee);
+            await updateCheckOutTimeAndFee(carId, fee);
             if (paymentResponse.errCode === 0) {
                 console.log(
                     paymentResponse.errMessage
                 );
-            }
-            else if (paymentResponse.errCode === 2) {
-                console.log(
-                    paymentResponse.errMessage
-                );
+                broadcastStatus({openExitServo: true, plate: correctPlate});
             }
             else {
                 console.log(
                     paymentResponse.errMessage
                 );
+                currentStatus.cash = true;
+                broadcastStatus(currentStatus);
             }
-            await updateCheckOutTimeAndFee(carId, fee);
-
+            // await updateCheckOutTimeAndFee(carId, fee);
         }
+        // broadcastStatus(currentStatus);
         return { success: true, message: "Đã sửa biển số và cập nhật dữ liệu" };
 
     }
@@ -630,28 +648,21 @@ export const manualPlateCorrectionExit = async (correctPlate) => {
 
 export const manualPaymentConfirm = async (fee, numberPlate) => {
     try {
+        console.log("here");
+        console.log(numberPlate, fee);
         const carId = await findCarIdByPlate(numberPlate);
+
         if (!carId) {
             return { errCode: 1, errMessage: "Biển số không tồn tại" };
         }
-        // const userId = await userService.findUserIdByNumberPlate(numberPlate);
-        // const paymentResponse = await userService.payMoney(userId, fee);
-        // if (paymentResponse.errCode === 0) {
-        //     console.log(paymentResponse.errMessage);
-        //     return { errCode: 0, errMessage: "Thanh toán thành công" };
-        // } else if (paymentResponse.errCode === 2) {
-        //     console.log(paymentResponse.errMessage);
-        //     return { errCode: 2, errMessage: "Không đủ tiền" };
-        // } else {
-        //     console.log(paymentResponse.errMessage);
-        //     return { errCode: 3, errMessage: "Lỗi thanh toán" };
-        // }
-        // update fee vào bảng ParkingLog
+
         const parkingLog = await updateCheckOutTimeAndFee(carId, fee);
         if (!parkingLog) {
             return { errCode: 2, errMessage: "Không tìm thấy bản ghi gửi xe" };
         }
+
         broadcastStatus({openExitServo: true, plate: numberPlate});
+
         return { errCode: 0, errMessage: "Thanh toán thành công" };
     } catch (err) {
         console.error("[Manual Payment Confirm] ❌", err);

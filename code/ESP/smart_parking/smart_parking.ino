@@ -104,6 +104,8 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
         }
         if (doc["ticketTypeIn"] == "month" || doc["ticketTypeIn"] == "day") {
           lcd.setCursor(0, 1);
+          lcd.print("                ");
+          lcd.setCursor(0, 1);
           lcd.print("Ticket: ");
 
           ticketTypeIn = doc["ticketTypeIn"].as<String>();
