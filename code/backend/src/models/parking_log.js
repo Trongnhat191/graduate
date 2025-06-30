@@ -23,9 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     carId: DataTypes.INTEGER,
     checkInTime: DataTypes.DATE,
     checkOutTime: DataTypes.DATE,
-    imagePath: DataTypes.STRING,
-    fee: DataTypes.INTEGER,
-    status: DataTypes.ENUM('in', 'out')
+    fee: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'ParkingLog',

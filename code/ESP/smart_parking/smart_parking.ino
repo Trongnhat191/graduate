@@ -84,6 +84,11 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       StaticJsonDocument<256> doc;
       DeserializationError error = deserializeJson(doc, payload, length);
       if (!error) {
+        if (doc["parkingFull"] == true) {
+          lcd.clear();
+          lcd.setCursor(0, 0);
+          lcd.print("Da het cho!");
+        }
         if (doc["openEntryServo"] == true) {
           openServoNonBlocking(servoEntryCtrl, "ENTRY");
           if (doc.containsKey("plate")) {

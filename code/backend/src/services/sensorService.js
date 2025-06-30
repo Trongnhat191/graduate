@@ -81,10 +81,6 @@ let createParkingLogs = async (carId) => {
             let parkingLog = await db.ParkingLog.create({
                 carId: carId,
                 checkInTime: new Date(),
-                // checkOutTime: null,
-                // imagePath: null,
-                // recognized: null,
-                // status: 'active'
             });
             resolve(parkingLog);
         } catch (e) {
@@ -275,7 +271,20 @@ export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot
 
     if (entry < 10 && !entryHandle) {
         entryHandle = true;
-        // response.openEntryServo = true;
+        const isFull = 
+            currentStatus.slot1 === "occupied" &&
+            currentStatus.slot2 === "occupied" &&
+            currentStatus.slot3 === "occupied" &&
+            currentStatus.slot4 === "occupied" &&
+            currentStatus.slot5 === "occupied";
+        
+        if (isFull) {
+            console.log("[Entry Car] 🅿️ Bãi xe đã đầy. Từ chối xe vào.");
+            if (ws && ws.readyState === 1) {
+                ws.send(JSON.stringify({ parkingFull: true }));
+            }
+            return; // Dừng xử lý, không mở cổng
+        }
         exec(
             "conda run -n graduate python src/python/detect_plate.py 0 src/public/photos/entry",
             async (err, stdout, stderr) => {
