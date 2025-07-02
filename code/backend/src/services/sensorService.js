@@ -392,7 +392,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot
         exitHandle = true;
         response.openExitServo = true;
         exec(
-            "conda run -n graduate python src/python/detect_plate.py 4 src/public/photos/exit",
+            "conda run -n graduate python src/python/detect_plate.py 2 src/public/photos/exit",
             async (err, stdout, stderr) => {
                 if (err) {
                     console.log("---------------------");
@@ -642,12 +642,13 @@ export const manualPlateCorrectionExit = async (correctPlate) => {
 
             const userId = await userService.findUserIdByNumberPlate(correctPlate);
             const paymentResponse = await userService.payMoney(userId, fee);
-            await updateCheckOutTimeAndFee(carId, fee);
+            // await updateCheckOutTimeAndFee(carId, fee);
             if (paymentResponse.errCode === 0) {
                 console.log(
                     paymentResponse.errMessage
                 );
                 broadcastStatus({openExitServo: true, plate: correctPlate});
+                await updateCheckOutTimeAndFee(carId, fee);
             }
             else {
                 console.log(

@@ -110,14 +110,17 @@ class BuyMonthTicket extends Component {
                 <button className="btn btn-primary" onClick={() => this.pay({...this.state, userId: this.state.userId})} disabled={!this.state.numberPlate}>
                     Thanh toán
                 </button>
-                {this.state.payUrl && (
-                    <div>
-                        <h3>Pay URL:</h3>
-                        <a href={this.state.payUrl} target="_blank" rel="noopener noreferrer">
-                            {this.state.payUrl}
-                        </a>
-                    </div>
-                )}
+                <div className='pay-url'>
+                    <h3>Pay URL:</h3>
+                    {this.state.payUrl && (
+                        <div>
+                            <a href={this.state.payUrl} target="_blank" rel="noopener noreferrer">
+                                {this.state.payUrl}
+                            </a>
+                        </div>
+                    )}
+                </div>
+                
                 {/* {console.log("check payUrl", this.state.payUrl)} */}
 
             </div>

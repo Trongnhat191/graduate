@@ -6,7 +6,7 @@
     justify-content: center;
     margin-top: 100px;
 
-    .current-ticket-info, .form-group {
+    .current-ticket-info, .form-group{
         background: #1a2236;
         padding: 24px 32px;
         border-radius: 12px;
@@ -31,5 +31,16 @@
 
     a {
         word-break: break-all;
+    }
+    .pay-url{
+        margin-top: 20px;
+        background: #1a2236;
+        padding: 24px 32px;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 420px;
+        text-align: left;
     }
 }

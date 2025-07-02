@@ -11,7 +11,7 @@ export const createMomoPaymentService = async (amount, userId, month) => {
   const orderInfo = 'pay with MoMo';
   const partnerCode = 'MOMO';
   const redirectUrl = 'http://localhost:3000/home';
-  const ipnUrl = 'https://864f-171-241-3-8.ngrok-free.app/api/momo/callback';
+  const ipnUrl = 'https://e40f-171-241-3-8.ngrok-free.app/api/momo/callback';
   const requestType = "payWithMethod";
   const orderId = partnerCode + new Date().getTime();
   const requestId = orderId;
@@ -107,7 +107,7 @@ export const rechargeBalanceService = async (amount, userId) => {
   const orderInfo = 'pay with MoMo';
   const partnerCode = 'MOMO';
   const redirectUrl = 'http://localhost:3000/home';
-  const ipnUrl = 'https://864f-171-241-3-8.ngrok-free.app/api/momo/callback-recharge';
+  const ipnUrl = 'https://e40f-171-241-3-8.ngrok-free.app/api/momo/callback-recharge';
   const requestType = "payWithMethod";
   const orderId = partnerCode + new Date().getTime();
   const requestId = orderId;
