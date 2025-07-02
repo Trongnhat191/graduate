@@ -58,7 +58,7 @@ let checkPlateExisted = async (plate) => {
                     return resolve({
                         carId: car.id,
                         errCode: 1,
-                        errMessage: "Biển số đã tồn tại",
+                        errMessage: "Biển số đã tồn tại và có người dùng",
                     });
                 }
 
@@ -211,33 +211,33 @@ let updateEndDate = async (carId) => {
 };
 
 let checkIfTicketTypeIsMonth = async (carId) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let ticket = await db.Ticket.findOne({
-                where: {
-                    carId: carId,
-                },
-            });
-            // console.log("ticket: ", ticket);
-            if (ticket) {
-                console.log("ticket: ", ticket.ticketType);
-                if (ticket.ticketType === "month") {
-                    console.log('-----');
-                    console.log("ticket: ", ticket.ticketType);
+    try {
+        let ticket = await db.Ticket.findOne({
+            where: {
+                carId: carId,
+                ticketType: "month",
+            },
+            order: [["updatedAt", "DESC"]], // lấy vé gần nhất
+        });
 
-                    resolve(true);
-                    // console.log("ticket: ", ticket.id);
-                } else {
-                    resolve(false);
-                }
+        if (ticket) {
+            const now = new Date();
+            const endDate = new Date(ticket.endDate);
+
+            if (endDate >= now) {
+                console.log("Vé tháng còn hạn");
+                return true; // vé còn hạn
             } else {
-                resolve(false);
+                console.log("Vé tháng đã hết hạn");
+                return false; // vé hết hạn
             }
-        } catch (e) {
-            console.log("error from checkIfTicketTypeIsMonth: ", e);
-            reject(e);
+        } else {
+            return false; // không có vé tháng nào
         }
-    });
+    } catch (e) {
+        console.log("error from checkIfTicketTypeIsMonth: ", e);
+        throw e;
+    }
 };
 
 let deleteTicketByCarId = async (carId) => {
@@ -286,7 +286,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot
             return; // Dừng xử lý, không mở cổng
         }
         exec(
-            "conda run -n graduate python src/python/detect_plate.py 0 src/public/photos/entry",
+            "conda run -n graduate python src/python/detect_plate.py 2 src/public/photos/entry",
             async (err, stdout, stderr) => {
                 if (err) {
                     console.log("---------------------");
@@ -392,7 +392,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot
         exitHandle = true;
         response.openExitServo = true;
         exec(
-            "conda run -n graduate python src/python/detect_plate.py 0 src/public/photos/exit",
+            "conda run -n graduate python src/python/detect_plate.py 4 src/public/photos/exit",
             async (err, stdout, stderr) => {
                 if (err) {
                     console.log("---------------------");
@@ -422,6 +422,7 @@ export const processSensorData = async ({ entry, exit, slot1, slot2, slot3, slot
                         }
 
                         const isMonthTicket = await checkIfTicketTypeIsMonth(carId);
+                        console.log("loại vé: ", isMonthTicket);
                         if (isMonthTicket) {  // Nếu là vé tháng
                             console.log(
                                 `[Exit Car] ✅ Vé tháng, không tính phí cho biển số ${plate}`
@@ -569,33 +570,37 @@ export const manualPlateCorrectionEntry = async (wrongPlate, correctPlate) => {
                 );
                 ticketTypeIn = "day";
             }
-        } else {
+        } else if (checkResponse.errCode === 2) {// Biển số tồn tại và chưa có người dùng
             ticketTypeIn = "day";
-            // Cập nhật biển số đúng thay cho biển số sai
-            if (wrongPlate !== 'error') {
-                const car = await db.Car.findOne({
-                    where: {
-                        numberPlate: wrongPlate,
-                    },
-                    raw: false,
-                });
-                if (car) {
-                    car.numberPlate = correctPlate;
-                    await car.save();
+            if (wrongCar) {
+                // Xóa các bản ghi liên quan đến biển số sai
+                await db.ParkingLog.destroy({ where: { carId: wrongCar.id } });
+                await db.Ticket.destroy({ where: { carId: wrongCar.id } });
+                await wrongCar.destroy();
+            }
+            // Tạo mới vé ngày và parkingLogs 
+            const carId = checkResponse.carId;
+            await createParkingLogs(carId);
+            await createNewTicket(carId);
+        }
+        else if (checkResponse.errCode === 0) {// Biển số chưa tồn tại và chưa có người dùng
+            ticketTypeIn = "day";
+            if (wrongCar) {
+                // Xóa các bản ghi liên quan đến biển số sai
+                await db.ParkingLog.destroy({ where: { carId: wrongCar.id } });
+                await db.Ticket.destroy({ where: { carId: wrongCar.id } });
+                await wrongCar.destroy();
+            }
+            // Tạo mới vé ngày và parkingLogs 
+            const checkResponse1 = await axios.post(
+                "http://localhost:6969/api/create-new-car",
+                {
+                    numberPlate: correctPlate
                 }
-                broadcastStatus({openEntryServo: true, plate: correctPlate});
-                return { success: true, message: "Biển số chưa tồn tại" };
-            }
-            else {
-                console.log(`[Create Car] ❌ Biển số sai là 'error', không thể cập nhật`);
-                //create new car with correct plate
-                const newCar = await db.Car.create({
-                    numberPlate: correctPlate,
-                });
-                await createParkingLogs(newCar.id);
-                await createNewTicket(newCar.id);
-                ticketTypeIn = "day";
-            }
+            );
+            const carId = checkResponse1.data.carId;
+            await createParkingLogs(carId);
+            await createNewTicket(carId);
         }
         broadcastStatus({
             openEntryServo: true,

@@ -89,10 +89,11 @@ class RechargeBalance extends Component {
                         {loading ? 'Đang xử lý...' : 'Nạp tiền'}
                     </button>
                 </div>
-                {message && <div className="message">{message}</div>}
+                {/* {message && <div className="message">{message}</div>} */}
+                <h3>Pay URL:</h3>
+
                 {this.state.payUrl && (
                     <div>
-                        <h3>Pay URL:</h3>
                         <a href={this.state.payUrl} target="_blank" rel="noopener noreferrer">
                             {this.state.payUrl}
                         </a>
