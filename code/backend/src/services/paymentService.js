@@ -63,7 +63,7 @@ export const updateMonthTicket = async (userId, month) => {
         const currentEnd = new Date(ticket.endDate);
         const startDate = currentEnd > now ? currentEnd : now;
         ticket.endDate = new Date(startDate.setMonth(startDate.getMonth() + Number(month)));
-        ticket.price += 10000 * Number(month);
+        ticket.price += 100000 * Number(month);
         await ticket.save();
     } else {
         // Tạo vé tháng mới
@@ -76,7 +76,7 @@ export const updateMonthTicket = async (userId, month) => {
             ticketType: 'month',
             startDate,
             endDate,
-            price: 10000 * Number(month),
+            price: 100000 * Number(month),
         });
     }
 };

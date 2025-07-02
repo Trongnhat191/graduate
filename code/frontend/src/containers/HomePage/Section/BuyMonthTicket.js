@@ -9,7 +9,7 @@ class BuyMonthTicket extends Component {
         this.state = {
             // Chứa các biến muốn quản lý State
             month: 1,
-            totalPrice: 10000,
+            totalPrice: 100000,
             payUrl: '',
             userId: '',
             numberPlate: '',
@@ -19,7 +19,7 @@ class BuyMonthTicket extends Component {
 
     componentDidMount() {
         const {userInfo} = this.props;
-        const pricePerMonth = 10000;
+        const pricePerMonth = 100000;
 
         if (userInfo) {
             this.setState({
@@ -47,7 +47,7 @@ class BuyMonthTicket extends Component {
     }
 
     handleOnChangeMonth = (event) => {
-        const pricePerMonth = 10000;
+        const pricePerMonth = 100000;
         let month = Number(event.target.value);
         if (month < 1) {
             month = 1;
@@ -97,7 +97,7 @@ class BuyMonthTicket extends Component {
                         />
                     </span>
                     <span className='price-per-month'>
-                        Đơn giá: 10000/tháng
+                        Đơn giá: 100000/tháng
                     </span>
                 </div>
 
